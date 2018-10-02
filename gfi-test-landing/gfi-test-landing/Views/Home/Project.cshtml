@@ -1,0 +1,331 @@
+﻿@model gfi_test_landing.Models.ProjectModel
+
+<section class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                <h1> @Model.Name </h1>
+            </div>
+        </div>
+    </div>
+</section>
+<section class="content">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-12 col-12">
+                <div class="callout callout-info">
+                    <h5> Description:</h5>
+                    @Model.Description
+                </div>
+            </div><!-- /.col -->
+
+        </div>
+    </div>
+
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-12">
+                <!-- interactive chart -->
+                <div class="card card-primary card-outline">
+                    <div class="card-header">
+                        Last 10 Builds date / Number of tests
+                    </div>
+                    <div class="card-body">
+                        <canvas id="myChart" width="1422" height="450" style="direction: ltr; left: 0px; top: 0px; width: 948.333px; height: 300px;"></canvas>
+                    </div>
+                    <!-- /.card-body-->
+                </div>
+                <!-- /.card -->
+            </div>
+            <!-- /.col -->
+        </div>
+        <!-- /.row -->
+
+        <div class="row">
+            <div class="col-md-6">
+                <!-- Line chart -->
+                <div class="card card-primary card-outline">
+                    <div class="card-header">
+                        <h3 class="card-title">
+                            Total Builds
+                        </h3>
+                    </div>
+                    <div class="card-body">
+                        <canvas id="doughnut-builds" style="height: 300px;"></canvas>
+                    </div>
+                </div>
+            </div>
+            <!-- /.col -->
+
+            <div class="col-md-6">
+                <!-- Bar chart -->
+
+                <div class="card card-primary card-outline">
+                    <div class="card-header">
+                        <h3 class="card-title">
+                            Builds percentage  (%)
+                        </h3>
+                    </div>
+                    <div class="card-body">
+                        <canvas id="doughnut-builds-percentage" style="height: 300px;"></canvas>
+                    </div>
+                </div>
+              
+                <!-- /.card -->
+                <!-- /.card -->
+            </div>
+            <!-- /.col -->
+        </div>
+
+        <div class="row">
+            <div class="col-md-6">
+                <!-- Line chart -->
+                <div class="card card-primary card-outline">
+                    <div class="card-header">
+                        <h3 class="card-title">
+                            Total Tests
+                        </h3>
+                    </div>
+                    <div class="card-body">
+                        <canvas id="doughnut-tests" style="height: 300px;"></canvas>
+                    </div>
+                    <!-- /.card-body-->
+                </div>
+            </div>
+            <!-- /.col -->
+
+            <div class="col-md-6">
+                <!-- Bar chart -->
+                <div class="card card-primary card-outline">
+                    <div class="card-header">
+                        <h3 class="card-title">
+                            Tests percentage (%)
+                        </h3>
+                    </div>
+                    <div class="card-body">
+                        <canvas id="doughnut-tests-percentage" style="height: 300px;"></canvas>
+                    </div>
+                    <!-- /.card-body-->
+                </div>
+                <!-- /.card -->
+                <!-- /.card -->
+            </div>
+            <!-- /.col -->
+        </div>
+    </div>
+</section>
+
+
+<!-- jQuery -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.2/Chart.bundle.js"></script>
+<!-- Bootstrap 4 -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.2/Chart.bundle.min.js"></script>
+<!-- FastClick -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.2/Chart.bundle.min.js"></script>
+<!-- AdminLTE App -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.2/Chart.min.js.js"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.5.0/Chart.min.js"></script>
+
+<script>
+
+    var projectId = @Model.Id;
+
+    $.ajax({
+        type: "GET",
+        contentType: "application/json",
+        dataType: "json",
+        url: 'http://localhost:59443/api/GetLastTenBuilds/' + projectId
+    })
+        .done(function (builds) {
+            console.log(builds);
+            InitChartBuild(builds);
+        });
+
+
+    function InitChartBuild(builds) {
+
+        var ctx = document.getElementById("myChart");
+        var myChart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: [removeTime(builds[0].Date_start), removeTime(builds[1].Date_start), removeTime(builds[2].Date_start),
+                    removeTime(builds[3].Date_start), removeTime(builds[4].Date_start), removeTime(builds[4].Date_start), removeTime(builds[5].Date_start),
+                    removeTime(builds[7].Date_start), removeTime(builds[8].Date_start), removeTime(builds[9].Date_start)],
+
+                datasets: [{
+                    label: '# of Tests/Builds',
+
+                    data: [builds[9].Total_tests, builds[8].Total_tests, builds[7].Total_tests,
+                        builds[6].Total_tests, builds[5].Total_tests, builds[4].Total_tests, builds[3].Total_tests,
+                        builds[2].Total_tests, builds[1].Total_tests, builds[0].Total_tests],
+
+                    backgroundColor: [
+                        'rgba(255, 99, 132, 0.2)',
+                        'rgba(54, 162, 235, 0.2)',
+                        'rgba(255, 206, 86, 0.2)',
+                        'rgba(75, 192, 192, 0.2)',
+                        'rgba(153, 102, 255, 0.2)',
+                        'rgba(75, 192, 192, 0.2)',
+                        'rgba(75, 192, 192, 0.2)',
+                        'rgba(75, 192, 192, 0.2)',
+                        'rgba(75, 192, 192, 0.2)',
+                        'rgba(75, 192, 192, 0.2)'
+
+                    ],
+                    borderColor: [
+                        'rgba(255,99,132,1)',
+                        'rgba(54, 162, 235, 1)',
+                        'rgba(255, 206, 86, 1)',
+                        'rgba(75, 192, 192, 1)',
+                        'rgba(153, 102, 255, 1)',
+                        'rgba(153, 102, 255, 1)',
+                        'rgba(153, 102, 255, 1)',
+                        'rgba(153, 102, 255, 1)',
+                        'rgba(153, 102, 255, 1)',
+                        'rgba(153, 102, 255, 1)'
+
+                    ],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                scales: {
+                    yAxes: [{
+                        ticks: {
+                            beginAtZero: true
+                        }
+                    }]
+                }
+            }
+        });
+    }
+
+    function removeTime(date) {
+        if (date !== undefined && date.indexOf('T') > 0) {
+            var pos = date.indexOf('T');
+            return date.substring(0, pos);
+        }
+        if(date == undefined){
+            return "Empty";
+        }
+        //var newDate = new Date(date);
+        //return newDate.getDate() + "/" + newDate.getMonth() +
+        //    " at " + newDate.getHours() +"h"+ ":" + newDate.getMinutes();
+    }
+
+
+    $.ajax({
+        type: "GET",
+        contentType: "application/json",
+        dataType: "json",
+        url: 'http://localhost:59443/api/GetTotalBuilds/' + projectId
+    })
+        .done(function (values) {
+            console.log(values);
+            InitChartBuildValues(values);
+        });
+
+
+   function InitChartBuildValues(values)
+   {
+       new Chart(document.getElementById("doughnut-builds"), {
+           type: 'doughnut',
+           data: {
+               labels: ["Builds", "Passed", "Failed", "Running"],
+               datasets: [
+                   {
+                       label: "",
+                       backgroundColor: ["#ff871e", "#9ded7d", "#216ec6", "#4c0145"],
+                       data: [values[0], values[1], values[2], values[3]]
+                   }
+               ]
+           },
+           options: {
+               title: {
+                   display: true,
+                   text: 'Total Builds, Passed, Failed and Running'
+               }
+           }
+       });
+
+
+       new Chart(document.getElementById("doughnut-builds-percentage"), {
+           type: 'doughnut',
+           data: {
+               labels: ["Builds", "%Passed", "%Failed"],
+               datasets: [
+                   {
+                       label: "",
+                       backgroundColor: ["#ff871e", "#9ded7d", "#216ec6", "#4c0145"],
+                       data: [values[0], values[4], values[5]]
+                   }
+               ]
+           },
+           options: {
+               title: {
+                   display: true,
+                   text: 'Total Builds, % Passed and % Failed'
+               }
+           }
+       });
+  }
+
+
+
+    $.ajax({
+        type: "GET",
+        contentType: "application/json",
+        dataType: "json",
+        url: 'http://localhost:59443/api/GetTotalAndPercentageTests/' + projectId
+    })
+        .done(function (Tests) {
+            console.log(Tests);
+            InitChartTestsValues(Tests);
+        });
+
+
+    function InitChartTestsValues(Tests) {
+        new Chart(document.getElementById("doughnut-tests"), {
+            type: 'doughnut',
+            data: {
+                labels: ["Tests", "Passed", "Failed", "Running"],
+                datasets: [
+                    {
+                        label: "",
+                        backgroundColor: ["#ff871e", "#9ded7d", "#216ec6", "#4c0145"],
+                        data: [Tests[0], Tests[1], Tests[2], Tests[3]]
+                    }
+                ]
+            },
+            options: {
+                title: {
+                    display: true,
+                    text: 'Total Tests, Passed, Failed and Running'
+                }
+            }
+        });
+
+
+        new Chart(document.getElementById("doughnut-tests-percentage"), {
+            type: 'doughnut',
+            data: {
+                labels: ["Tests", "%Passed", "%Failed"],
+                datasets: [
+                    {
+                        label: "",
+                        backgroundColor: ["#ff871e", "#9ded7d", "#216ec6"],
+                        data: [Tests[0], Tests[4], Tests[5]]
+                    }
+                ]
+            },
+            options: {
+                title: {
+                    display: true,
+                    text: 'Total Tests, % Passed, %Failed'
+                }
+            }
+        });
+    }
+
+</script>

@@ -1,0 +1,99 @@
+﻿@model gfi_test_landing.Models.TestViewModel
+@{ ViewBag.Title = "Create"; }
+
+<h2>Create Test</h2>
+@using (Html.BeginForm()) 
+{
+    @Html.AntiForgeryToken()
+<div class="form-horizontal">
+    <hr />
+    @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+    <div class="form-group">
+        <b class="text-danger">@ViewBag.testname_error_message</b>
+        <div class="input-group">
+            <div class="input-group-addon"><i class="fa fa-asterisk"></i></div>
+            @Html.EditorFor(model => model.test.name, new { htmlAttributes = new { @class = "form-control", @placeholder = "Test name: " } })
+        </div>
+    </div>
+    <div class="form-group">
+        <b class="text-danger">@ViewBag.testdesc_error_message</b>
+        <div class="input-group">
+            <div class="input-group-addon"><i class="fa fa-asterisk"></i></div>
+            @Html.EditorFor(model => model.test.description, new { htmlAttributes = new { @class = "form-control", @placeholder = "Test description: " } })
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="row">
+            <div class="col-md-2"></div>
+            <div class="col-md-3">
+                @Html.DropDownList("id_project", null, htmlAttributes: new { @class = "form-control" })
+            </div>
+            <div class="col-md-3">
+                @{
+                    List<SelectListItem> listItems = new List<SelectListItem>();
+                    listItems.Add(new SelectListItem { Text = "Google Chrome", Value = "Google Chrome", Selected = true });
+                    listItems.Add(new SelectListItem { Text = "Internet Explorer", Value = "IE" });
+                    listItems.Add(new SelectListItem { Text = "Firefox", Value = "Firefox" });
+                    listItems.Add(new SelectListItem { Text = "Safari", Value = "Safari" });
+                    listItems.Add(new SelectListItem { Text = "Edge", Value = "Edge" });
+                    listItems.Add(new SelectListItem { Text = "Opera", Value = "Opera" });
+                }
+                @Html.DropDownListFor(model => model.test.broswer, listItems, htmlAttributes: new { @class = "form-control" })
+            </div>
+            <div class="col-md-2"></div>
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="row">
+            <div class="col-md-offset-2 col-md-10">
+                <input type="submit" value="Create" class="btn btn-success" />
+                <button class="btn btn-danger" style="color:white;" value="Cancel">@Html.ActionLink("Cancel", "Index")</button>
+            </div>
+        </div>
+    </div>
+</div>
+}
+<h2>Steps</h2>
+<div class="form-horizontal">
+    <table class="table">
+        <tr>
+            <th>
+                @*@Html.DisplayNameFor(model => Model.actionList.last_update)*@ Last Update
+            </th>
+            <th>
+                @*@Html.DisplayNameFor(model => model.status)*@ Status
+            </th>
+            <th>
+                @*@Html.DisplayNameFor(model => model.Action.name)*@ Action name
+            </th>
+            <th>
+                @*@Html.DisplayNameFor(model => model.Object.name)*@ Object name
+            </th>
+            <th></th>
+        </tr>
+
+        @foreach (var item in Model.actionList)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.last_update)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.status)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Action.name)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Object.name)
+                </td>
+                <td>
+                    @Html.ActionLink("Edit", "Edit", new { /* id=item.PrimaryKey */ }) |
+                    @Html.ActionLink("Details", "Details", new { /* id=item.PrimaryKey */ }) |
+                    @Html.ActionLink("Delete", "Delete", new { /* id=item.PrimaryKey */ })
+                </td>
+            </tr>
+        }
+
+    </table>
+</div>

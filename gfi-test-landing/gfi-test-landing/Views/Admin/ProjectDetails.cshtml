@@ -1,0 +1,36 @@
+﻿@model gfi_test_landing.Models.ProjectModel
+
+@{
+    ViewBag.Title = "ProjectDetails";
+}
+
+<section class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                <h1> @Model.Name </h1>
+            </div>
+        </div>
+    </div>
+</section>
+<section class="content">
+    <div class="container-fluid">
+        <div class="row">           
+            <div class="col-12">
+                <div class="info-box">
+                    @if (Model.Logo_url != null)
+                    {
+                        <img src="@Model.Logo_url" class="img-circle" width="96" height="70" alt="User profile picture">
+                    }
+                        <div class="info-box-content">
+                            <h5> Description:</h5>
+                            @Model.Description
+                        </div>
+                  </div>
+            </div>
+        </div>          
+     </div>
+</section>
+
+
+
