@@ -231,24 +231,22 @@ namespace API.Api.Controllers
         [Route("api/GetTests/{idProject}")]
         public List<BuildTestsModel> GetTests(int idProject)
         {
-            var tests = (from t in db.ReportCollection
-                         where t.project_id == idProject
+            var tests = (from t in db.Tools_Test
+                         where t.id_project == idProject
                          select new BuildTestsModel
                          {
                              Id = t.id,
-                             Report_id = t.report_id,
+                             Report_id = t.id_build,
                              Date_start = t.date_start,
                              Date_end = t.date_end,
                              Status = t.status,
                              General_message = t.general_message,
                              Error_message = t.error_message,
-                             Error_type = t.error_type,
-                             Logs = t.logs,
-                             Test_name = t.test_name,
-                             Author = t.author,
+                             Browser = t.browser,
+                             Site = t.site,
+                             Name = t.name,
                              Duration = t.duration,
-                             Area = t.area,
-                             Screenshot = t.screenshot
+                             Description = t.description
 
                          }).ToList();
 

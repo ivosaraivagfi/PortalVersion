@@ -4,7 +4,7 @@
   <edmx:Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
     <!-- Diagram content (shape and connector positions) -->
     <edmx:Diagrams>
-      <Diagram DiagramId="0be30070d4e34d9caf18af0163f99501" Name="Diagram1" ZoomLevel="55">
+      <Diagram DiagramId="0be30070d4e34d9caf18af0163f99501" Name="Diagram1" ZoomLevel="52">
         <EntityTypeShape EntityType="testLandingModel.Action" Width="1.5" PointX="3" PointY="37.25" IsExpanded="true" />
         <EntityTypeShape EntityType="testLandingModel.ActionObject" Width="1.5" PointX="8.25" PointY="25.125" IsExpanded="true" />
         <EntityTypeShape EntityType="testLandingModel.AspNetRoles" Width="1.5" PointX="0.75" PointY="10.125" IsExpanded="true" />
@@ -81,6 +81,16 @@
         <AssociationConnector Association="testLandingModel.FK_TestUser_Test" ManuallyRouted="false" />
         <EntityTypeShape EntityType="testLandingModel.ReportCollection" Width="1.5" PointX="10.375" PointY="5.75" />
         <EntityTypeShape EntityType="testLandingModel.Report_test_collection" Width="1.5" PointX="10.375" PointY="10.75" />
+        <EntityTypeShape EntityType="testLandingModel.Build" Width="1.5" PointX="10.5" PointY="25.125" />
+        <EntityTypeShape EntityType="testLandingModel.Tools_Step" Width="1.5" PointX="18" PointY="21" />
+        <EntityTypeShape EntityType="testLandingModel.Tools_Test" Width="1.5" PointX="15.75" PointY="20.5" />
+        <EntityTypeShape EntityType="testLandingModel.TestBackoffice" Width="1.5" PointX="12.375" PointY="0.75" />
+        <AssociationConnector Association="testLandingModel.FK_Build_BatteryTest" />
+        <AssociationConnector Association="testLandingModel.FK_Build_Machine" />
+        <AssociationConnector Association="testLandingModel.FK_Build_Project" />
+        <AssociationConnector Association="testLandingModel.FK_Tools_Test_Build" />
+        <AssociationConnector Association="testLandingModel.FK_Tools_Test_Project" />
+        <AssociationConnector Association="testLandingModel.FK_Tools_Step_Tools_Test" />
       </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

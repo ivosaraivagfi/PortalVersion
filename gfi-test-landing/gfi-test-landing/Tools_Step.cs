@@ -15,28 +15,32 @@ namespace gfi_test_landing
 using System;
     using System.Collections.Generic;
     
-public partial class Request
+public partial class Tools_Step
 {
 
     public int id { get; set; }
 
-    public Nullable<System.DateTime> date { get; set; }
+    public Nullable<int> id_tools_test { get; set; }
+
+    public string name { get; set; }
+
+    public string description { get; set; }
+
+    public string error_message { get; set; }
+
+    public string screenshot { get; set; }
+
+    public string duration { get; set; }
 
     public string status { get; set; }
 
-    public string id_user { get; set; }
+    public Nullable<System.DateTime> data_start { get; set; }
 
-    public Nullable<int> id_project { get; set; }
-
-    public Nullable<int> id_batteryTest { get; set; }
+    public Nullable<System.DateTime> data_end { get; set; }
 
 
 
-    public virtual AspNetUsers AspNetUsers { get; set; }
-
-    public virtual BatteryTest BatteryTest { get; set; }
-
-    public virtual Project Project { get; set; }
+    public virtual Tools_Test Tools_Test { get; set; }
 
 }
 

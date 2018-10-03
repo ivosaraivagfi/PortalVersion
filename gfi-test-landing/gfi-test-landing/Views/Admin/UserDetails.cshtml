@@ -1,7 +1,9 @@
-﻿@model gfi_test_landing.Models.ProjectModel
+﻿@model gfi_test_landing.AspNetUsers
+
 @{
-    ViewBag.Title = "ProjectDetails";
+    ViewBag.Title = "UserDetails";
 }
+
 <section class="content-header">
     <div class="container-fluid">
         <div class="row">
@@ -11,8 +13,8 @@
             <div class="col-sm-6">
                 <ol class="breadcrumb float-sm-right">
                     <li class="breadcrumb-item"><a href="/Home/MyProjects">Home</a></li>
-                    <li class="breadcrumb-item"><a href="/Admin/Register">Projects List</a></li>
-                    <li class="breadcrumb-item active">Project Details</li>
+                    <li class="breadcrumb-item"><a href="/Admin/Register">Users List</a></li>
+                    <li class="breadcrumb-item active">User Details</li>
                 </ol>
             </div>
         </div>
@@ -22,7 +24,7 @@
     <div class="container-fluid">
         <div class="row mb-2">
             <div class="col-sm-6">
-                <h5> @Model.Name</h5>
+                <h5> @Model.UserName</h5>
             </div>
         </div>
     </div>
@@ -47,13 +49,20 @@
                     <div class="col-md-4">
 
                         <h5> Name:</h5>
-                        <h6>@Model.Name</h6>
-                        <h5>Description:</h5>
-                        <h6>@Model.Description</h6>
+                        <h6>@Model.FirstName @Model.LastName</h6>
+                        <h5>Phone Number:</h5>
+                        <h6>@Model.PhoneNumber</h6>
                     </div>
                     @*</div>*@
                     @*<div class="info-box-content">*@
+                    <div class="col-md-4">
 
+                        <h5> Email:</h5>
+                        <h6>@Model.Email</h6>
+                        <h5>Email Confirmed:</h5>
+                        <h6> @Html.CheckBoxFor(m => m.EmailConfirmed, new { @disabled = true })</h6>
+
+                    </div>
                     <div class="col-12 mt-3">
                         <div class="form-actions form-group">
 
@@ -72,7 +81,7 @@
     <!-- /.card -->
     <div class="card">
         <div class="card-header">
-            <h3 class="card-title">Projects List</h3>
+            <h3 class="card-title">Projects & Roles List</h3>
         </div>
         <!-- /.card-header -->
         <div class="card-body">
@@ -105,7 +114,7 @@
                 </div>
                 <div class="modal-body">
                     <div class="form-group">
-                        <label>Username</label>
+                        <label>Project Name</label>
                         <p id="labelProjectName" type="email" class="form-control" required></p>
 
                     </div>
@@ -130,11 +139,35 @@
 <script>
     var idProject;
     var id = @Html.Raw(Json.Encode(Model.Id));
-    getRoleUserByProject();
+
+    $(document).on("click", "#editRole", function () {
+        $('#editEmployeeModal').modal('hide');
+        var data = {
+            RoleId: $('#RolesDropdown').val(),
+            id_project: idProject,
+            UserId: id,
+        }
+        $.ajax({
+            url: 'http://localhost:59443/api/setUserRole',
+            type: 'POST',
+           // dataType: 'json',
+            data: data,
+            success: function (d) {
+
+                window.location.reload();
+             
+
+            },
+            error: function () {
+                alert("Error please try again");
+            }
+        });
+
+    })
 
     $(document).ready(function ( ) {
 
-        
+        getRoleProjectByUser();
         $('[data-toggle="tooltip"]').tooltip();
         $('#editEmployeeModal').addClass('show');
 
@@ -176,20 +209,20 @@
 
     })
 
-    function getRoleUserByProject() {
+    function getRoleProjectByUser() {
         var id = @Html.Raw(Json.Encode(Model.Id));
         $.ajax({
             type: "GET",
             contentType: "application/json",
             dataType: "json",
 
-            url: 'http://localhost:59443/api/RoleUserByProject/' + id
+            url: 'http://localhost:59443/api/RoleProjectByUser/' + id
         })
             .done(function (RoleProjectByUser) {
                 console.log(RoleProjectByUser);
 
                 RoleProjectByUser.forEach(function (roleproject) {
-                    setDataTableValues(roleproject.Username, roleproject.NameRole, roleproject.IdProject, roleproject.IdRole, roleproject.IdUser);
+                    setDataTableValues(roleproject.NameProject, roleproject.NameRole, roleproject.IdProject, roleproject.IdRole, roleproject.IdUser);
                 });
 
             }).always(function () {
@@ -198,17 +231,23 @@
             });
 
     }
-    function setDataTableValues( Username, Role, Id) {
+    function setDataTableValues( NameProject, NameRole, Id) {
 
         var details = '<a href="#editEmployeeModal" class="edit" data-toggle="modal"><i class="material-icons fa fa-pencil-square-o" style="font-size:24px; color:green" data-toggle="tooltip" title="Edit"></i></a>';
         //var del = '<a data-toggle="modal" data-id="' + Id + '" class="tem-trigger-btn" data-toggle="modal" href="#addModal"><i class="fa fa-trash-o" style="font-size:24px; color:red"></i></a>';
-        
+
+
         var row = '<tr>' +
             '<td hidden>' + Id + '</td>' +
-            '<td>' + Username + '</td>' +
-            '<td>' + Role + '</td>' +
+            '<td>' + NameProject + '</td>' +
+            '<td>' + NameRole + '</td>' +
             '<td>' + details + /*""+ del +*/'</td>' +
             '</tr>';
 
         $('#projectRole-table > tbody').append(row);
     }</script>
+
+
+
+
+

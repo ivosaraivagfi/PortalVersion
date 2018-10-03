@@ -1,95 +1,341 @@
-﻿@model IEnumerable<gfi_test_landing.Project>
+﻿@model gfi_test_landing.Models.ProjectModel
+@{
+                /**/
+                ViewBag.Title = "Projects List";
+}
 
 
-<link href="~/Content/css/lib/datatable/dataTables.bootstrap.min.css" rel="stylesheet" />
-
-<div class="content mt-3">
-    <div class="animated fadeIn">
+<section class="content-header">
+    <div class="container-fluid">
         <div class="row">
-            <div class="card-body">
-                <div id="bootstrap-data-table_wrapper" class="dataTables_wrapper container-fluid dt-bootstrap4 no-footer">
-                    <div class="col-sm-12">
-                        <table id="bootstrap-data-table" class="table table-striped table-bordered dataTable no-footer" role="grid" aria-describedby="bootstrap-data-table_info">
-                            <thead>
-                                <tr>
-                                    <th>
-                                        @Html.Label("Name")
-                                    </th>
-                                    <th>
-                                        @Html.Label("Description")
-                                    </th>
+            <div class="col-sm-6 mx-auto offset-3">
+                <h1>Projects List</h1>
+            </div>
+            <div class="col-sm-6">
+                <ol class="breadcrumb float-sm-right">
+                    <li class="breadcrumb-item"><a href="/Home/MyProjects">Home</a></li>
+                    <li class="breadcrumb-item active">Projects List</li>
+                </ol>
+            </div>
+        </div>
+    </div><!-- /.container-fluid -->
+</section>
 
+<section class="content">
+    <div class="container-fluid">
+        <div class="row">
+            @*<div class="alert alert-success alert-dismissible mx-auto d-none" id="created-alert">
+                    <p id="created-text"></p>
+                    <h5><i class="icon fa fa-check"></i> Created!</h5>
+                </div>*@
 
-                                    <th>
-                                        @Html.Label("Image")
-                                    </th>
+            <div id="dialog" class="alert alert-success alert-dismissible d-none" style="position:relative;">
+                <p style="text-align:center"> </p>
+                <h5><i class="icon fa fa-check"></i> Deleted!</h5>
+            </div>
 
-                                    <th style="display:none"></th>
-                                </tr>
-                            </thead>
-                            <tbody>
-
-                                @foreach (var item in Model)
-                                {
-                                    <tr>
-                                        <td>
-                                            @Html.DisplayFor(modelItem => item.name)
-                                        </td>
-                                        <td>
-                                            @Html.DisplayFor(modelItem => item.description)
-                                        </td>
-                                        <td>
-                                            @Html.DisplayFor(modelItem => item.logo_url)
-                                        </td>
-
-                                       
-
-                                        <td>
-                                            @Html.ActionLink(" ", "AddUserToProject", new { idProject = item.id }, new { @class = "fa fa-plus-circle" , title="Add user to project"}) |
-                                            @Html.ActionLink(" ", "DetailsProject", new { id = item.id }, new { @class = "fa fa-list" }) |
-                                            @*@Html.ActionLink(" ", "Delete", new { id = item.Id }, new { @class = "fa fa-trash-o", @data_toggle = "modal", @data_target = "#exampleModalCenter" })*@
-                                            @Html.ActionLink(" ", "_ModalDelete", new { id = item.id, actionName = "ProjectList" }, new { @class = "fa fa-trash-o", data_toggle = "modal", data_target = "#modal-container" })
-
-                                        </td>
-                                    </tr>
-
-
-                                }
-
-
-                            </tbody>
-                        </table>
-
+            <div id="addModal" class="modal fade">
+                <div class="modal-dialog modal-confirm">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h4 class="modal-title">Are you sure?</h4>
+                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                        </div>
+                        <div class="modal-body">
+                            <Label id="idUserDelete" hidden></Label>
+                            <p>Do you really want to delete the <Label id="label-delete"></Label> Project? This process cannot be undone.</p>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-info" data-dismiss="modal">Cancel</button>
+                            <button type="button" id="idDelete" class="btn btn-danger" data-toggle="modal" data-target="#myModal1">Delete </button>
+                        </div>
                     </div>
                 </div>
             </div>
+
+            <div class="col-12">
+                <!-- /.card -->
+                <div class="positionDiv" id="position4"></div>
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">Projects List</h3>
+                    </div>
+                    <!-- /.card-header -->
+                    <div class="card-body">
+                        <table id="projects-table" class="table table-bordered table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Id</th>
+                                    <th>Name</th>
+                                    <th>Description</th>
+                                    <th>Edit</th>
+                                    <th>Delete</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                    <!-- /.card-body -->
+                </div>
+                <!-- /.card -->
+            </div>
+            <!--/.col (left) -->
+            <!-- right column -->
         </div>
-    </div>
-</div>
+        <!-- /.row -->
+    </div><!-- /.container-fluid -->
+    <!-- Modal -->
+</section>
 
-<div id="list">
+<script src="~/Scripts/jquery.unobtrusive-ajax.js"></script>
 
-</div>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
 
-<div id="modal-container" class="modal fade hidden-print" tabindex="-1" role="dialog">
-    <div class="modal-dialog">
-        <div class="modal-content">
+<script>
+    $(document).ready(function () {
 
-        </div>
-    </div>
-</div>
+        getProjects();
 
 
-@* The normal bootstrap behavior is to only grab the content for the modal once, if you need to pull in different partial views then the data on the modal will have to be cleared.*@
-<script type="text/javascript">
-    $('#modal-container').on('show.bs.modal', function (event) {
-        var button = $(event.relatedTarget); // Button that triggered the modal
-        var url = button.attr("href");
-        var modal = $(this);
-
-        // note that this will replace the content of modal-content ever time the modal is opened
-        modal.find('.modal-content').load(url);
     });
-</script>
 
-@Scripts.Render("~/Content/TableJS")
+
+    function OnSuccess(value, status) {
+        console.log(status);
+
+        var name = $("#project-name").val();
+        //$('#created-text').text("Project" +" " + name);
+        //        $("#created-alert").addClass("d-block");
+
+        $('#dialog p').text("Project" + " " + name);
+        $('#dialog').addClass("d-block");
+
+        $("#dialog").dialog({
+
+            closeText: "",
+
+        });
+        $(".ui-button").addClass("d-none");
+
+        setTimeout(function () {
+            location.reload();
+
+        }, 3000);
+    }
+
+    function OnFailure(response) {
+        alert("Whoops! That didn't go so well did it?");
+    }
+
+    $("#inputFile").change(function () {
+        var value = $("#inputFile").val();
+        $("#label-inputFile").text(value);
+
+        var file = $('form input[type=file]')[0].files[0];
+        console.log(file);
+    });
+
+
+    function getProjects() {
+        $.ajax({
+            type: "GET",
+            contentType: "application/json",
+            dataType: "json",
+            url: 'http://localhost:59443/api/GetProjects'
+        })
+            .done(function (Projects) {
+                console.log(Projects);
+
+                Projects.forEach(function (project) {
+                    setDataTableValues(project.Id, project.Name, project.Description);
+                });
+
+            }).always(function () {
+                //Init DataTable
+                $("#projects-table").DataTable();
+            });
+
+    }
+    function setDataTableValues(Id, Name, Description) {
+
+        var edit = '<a href="http://localhost:54669/Admin/ProjectDetails?ProjectId=' + Id +
+            '" target="_blank"><i class="fa fa-edit" style="font-size:24px; color:green"></i></a>';
+        var del = '<a data-toggle="modal" class="tem-trigger-btn"' +
+            ' data-toggle="modal" href="#addModal"><i class="fa fa-trash-o" id="i-con" style="font-size:24px; color:red"></i></a>';
+
+        var row = '<tr>' +
+            '<td>' + Id + '</td>' +
+            '<td>' + Name + '</td>' +
+            '<td>' + Description + '</td>' +
+            '<td>' + edit + '</td>' +
+            '<td>' + del + '</td>' +
+            '</tr>';
+
+        $('#projects-table > tbody').append(row);
+    }
+
+
+
+    //On click on trash icon
+    //Delete - ********ver query para projectos com associação***********
+    $(document).on("click", ".tem-trigger-btn", function () {
+        var projectId = $(this).parent().closest("tr").find('td:first').text();
+        var projectName = $(this).parent().closest("tr").find('td:eq(1)').text();
+        $("#label-delete").html(projectName);
+        $('#addModal').addClass('show');
+
+        //On click on modal button Delete
+        $(document).on("click", "#idDelete", function () {
+            $('#addModal').modal('hide');
+            deleteProject(projectId, projectName);
+        });
+
+    });
+
+
+    function deleteProject(projectId, projectName) {
+        $.ajax({
+            type: "DELETE",
+            url: 'http://localhost:59443/api/DeleteProject/' + projectId,
+
+            success: function (result) {
+
+                $('#dialog p').text("Project" + " " + projectName);
+                $('#dialog').addClass("d-block");
+
+                $("#dialog").dialog({
+                    position: { my: "left top", at: "left bottom", of: button },
+                    closeText: "",
+
+                });
+                $(".ui-button").addClass("d-none");
+                setTimeout(function () {
+                    location.reload();
+
+                }, 3000);
+
+
+            }
+        });
+
+    }</script>
+
+<style>
+
+    .card-body .dataTables_wrapper .row .col-md-6 .dataTables_length .form-control {
+        display: inline-block;
+        width: auto;
+    }
+
+    .card-body .dataTables_wrapper .row .col-md-6 .dataTables_filter .form-control {
+        display: inline-block;
+        width: auto;
+    }
+</style>
+
+@*Modal style*@
+<style type="text/css">
+
+    body {
+        font-family: 'Varela Round', sans-serif;
+    }
+
+    .modal-confirm {
+        color: #636363;
+        width: 400px;
+    }
+
+        .modal-confirm .modal-content {
+            padding: 20px;
+            border-radius: 5px;
+            border: none;
+            text-align: center;
+            font-size: 14px;
+        }
+
+        .modal-confirm .modal-header {
+            border-bottom: none;
+            position: relative;
+        }
+
+        .modal-confirm h4 {
+            text-align: center;
+            font-size: 26px;
+            margin: 30px 0 -10px;
+        }
+
+        .modal-confirm .close {
+            position: absolute;
+            top: -5px;
+            right: -2px;
+        }
+
+        .modal-confirm .modal-body {
+            color: #999;
+        }
+
+        .modal-confirm .modal-footer {
+            border: none;
+            text-align: center;
+            border-radius: 5px;
+            font-size: 13px;
+            padding: 10px 15px 25px;
+        }
+
+            .modal-confirm .modal-footer a {
+                color: #999;
+            }
+
+        .modal-confirm .icon-box {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto;
+            border-radius: 50%;
+            z-index: 9;
+            text-align: center;
+            border: 3px solid #f15e5e;
+        }
+
+            .modal-confirm .icon-box i {
+                color: #f15e5e;
+                font-size: 46px;
+                display: inline-block;
+                margin-top: 13px;
+            }
+
+        .modal-confirm .btn {
+            color: #fff;
+            border-radius: 4px;
+            background: #60c7c1;
+            text-decoration: none;
+            transition: all 0.4s;
+            line-height: normal;
+            min-width: 120px;
+            border: none;
+            min-height: 40px;
+            border-radius: 3px;
+            margin: 0 5px;
+            outline: none !important;
+        }
+
+        .modal-confirm .btn-info {
+            background: #c1c1c1;
+        }
+
+            .modal-confirm .btn-info:hover, .modal-confirm .btn-info:focus {
+                background: #a8a8a8;
+            }
+
+        .modal-confirm .btn-danger {
+            background: #f15e5e;
+        }
+
+            .modal-confirm .btn-danger:hover, .modal-confirm .btn-danger:focus {
+                background: #ee3535;
+            }
+
+    .trigger-btn {
+        display: inline-block;
+        margin: 100px auto;
+    }
+</style>

@@ -244,6 +244,9 @@
     <Compile Include="Bug_reporting_step.cs">
       <DependentUpon>Model.tt</DependentUpon>
     </Compile>
+    <Compile Include="Build.cs">
+      <DependentUpon>Model.tt</DependentUpon>
+    </Compile>
     <Compile Include="Component.cs">
       <DependentUpon>Model.tt</DependentUpon>
     </Compile>
@@ -313,6 +316,7 @@
     <Compile Include="Models\ReportViewModel.cs" />
     <Compile Include="Models\SingleTestReportModel.cs" />
     <Compile Include="Models\TestViewModel.cs" />
+    <Compile Include="Models\ToolsStep.cs" />
     <Compile Include="Models\UserProjectModel.cs" />
     <Compile Include="Models\UserRoleProjectModel.cs" />
     <Compile Include="Object.cs">
@@ -382,7 +386,16 @@
     <Compile Include="TestAction.cs">
       <DependentUpon>Model.tt</DependentUpon>
     </Compile>
+    <Compile Include="TestBackoffice.cs">
+      <DependentUpon>Model.tt</DependentUpon>
+    </Compile>
     <Compile Include="TestUser.cs">
+      <DependentUpon>Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Tools_Step.cs">
+      <DependentUpon>Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Tools_Test.cs">
       <DependentUpon>Model.tt</DependentUpon>
     </Compile>
     <Compile Include="UserRole.cs">
@@ -1346,6 +1359,7 @@
       <DependentUpon>Model.edmx</DependentUpon>
       <LastGenOutput>Model.Context.cs</LastGenOutput>
     </Content>
+    <Content Include="Model.edmx.sql" />
     <Content Include="Model.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
       <DependentUpon>Model.edmx</DependentUpon>
@@ -1835,8 +1849,7 @@
     <Content Include="Views\Account\ProfileUser.cshtml" />
     <Content Include="Views\Home\Project.cshtml" />
     <Content Include="Views\Admin\Register.cshtml" />
-    <Content Include="Views\Admin\UserList.cshtml" />
-    <Content Include="Views\Admin\Details.cshtml" />
+    <Content Include="Views\Admin\UsersList.cshtml" />
     <Content Include="Views\Admin\Edit.cshtml" />
     <Content Include="Views\Shared\_RoleProjectByUser.cshtml" />
     <Content Include="Views\Shared\_ModalDelete.cshtml" />
@@ -1844,7 +1857,6 @@
     <Content Include="Views\Home\MyProjects.cshtml" />
     <Content Include="Views\Admin\CreateProject.cshtml" />
     <Content Include="Views\Admin\ProjectList.cshtml" />
-    <Content Include="Views\Admin\DetailsProject.cshtml" />
     <Content Include="Views\Admin\_UserRoleByProject.cshtml" />
     <Content Include="Views\Admin\EditUserRoleByProject.cshtml" />
     <Content Include="Views\Tests\Create.cshtml" />
@@ -1878,6 +1890,10 @@
     <Content Include="Views\Reports\TestDetails.cshtml" />
     <Content Include="Views\Admin\ProjectDetails.cshtml" />
     <Content Include="Views\Admin\_AlertSuccess.cshtml" />
+    <Content Include="Views\Admin\UserDetails.cshtml" />
+    <Content Include="Views\Admin\UserEdit.cshtml" />
+    <Content Include="Views\Admin\_RoleProjectByUser.cshtml" />
+    <Content Include="Views\Reports\StepDetails.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

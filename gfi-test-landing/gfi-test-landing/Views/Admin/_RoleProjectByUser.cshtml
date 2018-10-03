@@ -1,0 +1,72 @@
+﻿@model IEnumerable<gfi_test_landing.Models.RoleProjectByUserModel>
+
+<div class="col-12">
+    <!-- /.card -->
+    <div class="card">
+        <div class="card-header">
+            <h3 class="card-title">Projects List</h3>
+        </div>
+        <!-- /.card-header -->
+        <div class="card-body">
+            <table id="projects-table" class="table table-bordered table-striped">
+                <thead>
+                    <tr>
+                        <th>Id</th>
+                        <th>Name</th>
+                        <th>Description</th>
+                        <th>Details</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
+        <!-- /.card-body -->
+    </div>
+    <!-- /.card -->
+</div>
+
+<script>
+    $(document).ready(function () {
+
+        getRoleProjectByUser();
+    });
+
+
+    function getRoleProjectByUser() {
+        $.ajax({
+            type: "GET",
+            contentType: "application/json",
+            dataType: "json",
+            data: { Id },
+            url: 'http://localhost:59443/api/RoleProjectByUser'
+        })
+            .done(function (RoleProjectByUser) {
+                console.log(RoleProjectByUser);
+
+                RoleProjectByUser.forEach(function (roleproject) {
+                    setDataTableValues(roleproject.Name, roleproject.name);
+                });
+
+            }).always(function () {
+                //Init DataTable
+                $("#projects-table").DataTable();
+            });
+
+    }
+    function setDataTableValues( Name, nameProject) {
+
+        var details = '<a href="http://localhost:54669/Admin/UserDetails?UserId=' + Id +
+            '" target="_blank"><i class="fa fa-share-square-o" style="font-size:24px; color:green"></i></a>';
+        var del = '<a data-toggle="modal" data-id="' + Id + '" data-name="' + Email + '" class="tem-trigger-btn" data-toggle="modal" href="#addModal"><i class="fa fa-trash-o" style="font-size:24px; color:red"></i></a>';
+
+
+        var row = '<tr>' +
+            //'<td>' + Id + '</td>' +
+            '<td>' + Name + '</td>' +
+            '<td>' + nameProject + '</td>' +
+            '<td>' + details + " " + del + '</td>' +
+            '</tr>';
+
+        $('#projects-table > tbody').append(row);
+    }</script>
+

@@ -1,13 +1,20 @@
 ﻿@model gfi_test_landing.Models.ProjectModel
 
+
 <section class="content-header">
     <div class="container-fluid">
-        <div class="row mb-2">
+        <div class="row">
+            <div class="col-sm-6 mx-auto offset-3">
+                <h1> @Model.Name</h1>
+            </div>
             <div class="col-sm-6">
-                <h1> @Model.Name </h1>
+                <ol class="breadcrumb float-sm-right">
+                    <li class="breadcrumb-item"><a href="/Home/MyProjects">Home</a></li>
+                    <li class="breadcrumb-item active">Overview</li>
+                </ol>
             </div>
         </div>
-    </div>
+    </div><!-- /.container-fluid -->
 </section>
 <section class="content">
     <div class="container-fluid">
@@ -70,7 +77,7 @@
                         <canvas id="doughnut-builds-percentage" style="height: 300px;"></canvas>
                     </div>
                 </div>
-              
+
                 <!-- /.card -->
                 <!-- /.card -->
             </div>
@@ -120,12 +127,11 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.2/Chart.bundle.js"></script>
 <!-- Bootstrap 4 -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.2/Chart.bundle.min.js"></script>
-<!-- FastClick -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.2/Chart.bundle.min.js"></script>
-<!-- AdminLTE App -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.2/Chart.min.js.js"></script>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.5.0/Chart.min.js"></script>
+<!-- AdminLTE App -->
+@*<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.2/Chart.min.js.js"></script>*@
+
+@*<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.5.0/Chart.min.js"></script>*@
 
 <script>
 
@@ -139,7 +145,12 @@
     })
         .done(function (builds) {
             console.log(builds);
-            InitChartBuild(builds);
+            if (builds.length > 9) {
+                InitChartBuild(builds);
+            }
+            else {
+                InitChartBuild5(builds);
+            }
         });
 
 
@@ -149,28 +160,86 @@
         var myChart = new Chart(ctx, {
             type: 'bar',
             data: {
-                labels: [removeTime(builds[0].Date_start), removeTime(builds[1].Date_start), removeTime(builds[2].Date_start),
-                    removeTime(builds[3].Date_start), removeTime(builds[4].Date_start), removeTime(builds[4].Date_start), removeTime(builds[5].Date_start),
-                    removeTime(builds[7].Date_start), removeTime(builds[8].Date_start), removeTime(builds[9].Date_start)],
+
+                    labels: [
+                        removeTime(builds[0].Date_start), removeTime(builds[1].Date_start), removeTime(builds[2].Date_start),
+                        removeTime(builds[3].Date_start), removeTime(builds[4].Date_start), removeTime(builds[5].Date_start), removeTime(builds[6].Date_start),
+                        removeTime(builds[7].Date_start), removeTime(builds[8].Date_start), removeTime(builds[9].Date_start)
+                    ],
+
+                        datasets: [{
+                            label: '# of Tests/Builds',
+
+                            data: [builds[9].Total_tests, builds[8].Total_tests, builds[7].Total_tests,
+                            builds[6].Total_tests, builds[5].Total_tests, builds[4].Total_tests, builds[3].Total_tests,
+                            builds[2].Total_tests, builds[1].Total_tests, builds[0].Total_tests],
+
+                            backgroundColor: [
+                                'rgba(255, 99, 132, 0.2)',
+                                'rgba(54, 162, 235, 0.2)',
+                                'rgba(255, 206, 86, 0.2)',
+                                'rgba(75, 192, 192, 0.2)',
+                                'rgba(153, 102, 255, 0.2)',
+                                'rgba(75, 192, 192, 0.2)',
+                                'rgba(75, 192, 192, 0.2)',
+                                'rgba(75, 192, 192, 0.2)',
+                                'rgba(75, 192, 192, 0.2)',
+                                'rgba(75, 192, 192, 0.2)'
+
+                            ],
+                            borderColor: [
+                                'rgba(255,99,132,1)',
+                                'rgba(54, 162, 235, 1)',
+                                'rgba(255, 206, 86, 1)',
+                                'rgba(75, 192, 192, 1)',
+                                'rgba(153, 102, 255, 1)',
+                                'rgba(153, 102, 255, 1)',
+                                'rgba(153, 102, 255, 1)',
+                                'rgba(153, 102, 255, 1)',
+                                'rgba(153, 102, 255, 1)',
+                                'rgba(153, 102, 255, 1)'
+
+                            ],
+                            borderWidth: 1
+                        }]
+
+            },
+            options: {
+                scales: {
+                    yAxes: [{
+                        ticks: {
+                            beginAtZero: true
+                        }
+                    }]
+                }
+            }
+        });
+    }
+
+    function InitChartBuild5(builds) {
+
+        var ctx = document.getElementById("myChart");
+        var myChart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+
+                labels: [
+                    removeTime(builds[0].Date_start), removeTime(builds[1].Date_start), removeTime(builds[2].Date_start),
+                    removeTime(builds[3].Date_start), removeTime(builds[4].Date_start)
+                ],
 
                 datasets: [{
                     label: '# of Tests/Builds',
 
-                    data: [builds[9].Total_tests, builds[8].Total_tests, builds[7].Total_tests,
-                        builds[6].Total_tests, builds[5].Total_tests, builds[4].Total_tests, builds[3].Total_tests,
-                        builds[2].Total_tests, builds[1].Total_tests, builds[0].Total_tests],
+                    data: [ builds[4].Total_tests, builds[3].Total_tests,
+                    builds[2].Total_tests, builds[1].Total_tests, builds[0].Total_tests],
 
                     backgroundColor: [
                         'rgba(255, 99, 132, 0.2)',
                         'rgba(54, 162, 235, 0.2)',
                         'rgba(255, 206, 86, 0.2)',
                         'rgba(75, 192, 192, 0.2)',
-                        'rgba(153, 102, 255, 0.2)',
-                        'rgba(75, 192, 192, 0.2)',
-                        'rgba(75, 192, 192, 0.2)',
-                        'rgba(75, 192, 192, 0.2)',
-                        'rgba(75, 192, 192, 0.2)',
-                        'rgba(75, 192, 192, 0.2)'
+                        'rgba(153, 102, 255, 0.2)'
 
                     ],
                     borderColor: [
@@ -178,16 +247,13 @@
                         'rgba(54, 162, 235, 1)',
                         'rgba(255, 206, 86, 1)',
                         'rgba(75, 192, 192, 1)',
-                        'rgba(153, 102, 255, 1)',
-                        'rgba(153, 102, 255, 1)',
-                        'rgba(153, 102, 255, 1)',
-                        'rgba(153, 102, 255, 1)',
-                        'rgba(153, 102, 255, 1)',
                         'rgba(153, 102, 255, 1)'
+                      
 
                     ],
                     borderWidth: 1
                 }]
+
             },
             options: {
                 scales: {

@@ -3,12 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 
-namespace API.GFI.TestLanding.Models
+namespace gfi_test_landing.Models
 {
     public class ToolsStep
     {
         public int Id { get; set; }
-        public int? Id_tools_test { get; set; }
+        public int Id_tools_test { get; set; }
         public string Name { get; set; }
         public string Description { get; set; }
         public string Error_message { get; set; }

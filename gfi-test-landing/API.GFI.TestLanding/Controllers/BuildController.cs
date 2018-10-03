@@ -89,5 +89,75 @@ namespace API.GFI.TestLanding
 
             return test;
         }
+
+        [Route("api/GetBuildSteps/{idTest}")]
+        public List<ToolsStep> GetBuildSteps(int idTest)
+        {
+            var step = (from s in db.Tools_Step
+                         where s.id_tools_test == idTest
+                         select new ToolsStep
+                         {
+                             Id = s.id,
+                             Id_tools_test = s.id_tools_test,
+                             Name = s.name,
+                             Status = s.status,
+                             Data_start = s.data_start,
+                             Data_end = s.data_end,
+                             Duration = s.duration,
+                             Description = s.description,
+                             Error_message = s.error_message,
+                             Screenshot = s.screenshot
+
+                         }).ToList();
+
+            return step;
+        }
+
+        [Route("api/GetStep/{idStep}")]
+        public ToolsStep GetStep(int idStep)
+        {
+            var test = (from s in db.Tools_Step
+                        where s.id == idStep
+                        select new ToolsStep
+                        {
+                            Id = s.id,
+                            Id_tools_test = s.id_tools_test,
+                            Name = s.name,
+                            Status = s.status,
+                            Data_start = s.data_start,
+                            Data_end = s.data_end,
+                            Duration = s.duration,
+                            Description = s.description,
+                            Error_message = s.error_message,
+                            Screenshot = s.screenshot
+                        }).Single();
+
+            return test;
+        }
+
+        [Route("api/GetAllTestsToProject/{idProject}")]
+        public List<ToolsTest> GetTestsToProject(int idProject)
+        {
+            var test = (from t in db.Tools_Test
+                        where t.id_project == idProject
+                        select new ToolsTest
+                        {
+                            Id = t.id,
+                            Id_build = t.id_build,
+                            Id_project = t.id_project,
+                            Name = t.name,
+                            Status = t.status,
+                            Date_start = t.date_start,
+                            Date_end = t.date_end,
+                            Duration = t.duration,
+                            Description = t.description,
+                            Error_message = t.error_message,
+                            Browser = t.browser,
+                            Site = t.site,
+                            General_message = t.general_message
+                        }).ToList();
+
+            return test;
+        }
     }
    }

@@ -17,6 +17,7 @@ namespace gfi_test_landing.Models
         }
         public string FirstName { get; set; }
         public string LastName { get; set; }
+        public string ImageUrl { get; set; }
     }
 
     public class ApplicationDbContext : IdentityDbContext<ApplicationUser>

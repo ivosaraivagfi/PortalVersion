@@ -15,49 +15,53 @@ namespace gfi_test_landing
 using System;
     using System.Collections.Generic;
     
-public partial class Object
+public partial class Tools_Test
 {
 
     [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
-    public Object()
+    public Tools_Test()
     {
 
-        this.ActionObject = new HashSet<ActionObject>();
-
-        this.Step = new HashSet<Step>();
+        this.Tools_Step = new HashSet<Tools_Step>();
 
     }
 
 
     public int id { get; set; }
 
-    public string name { get; set; }
+    public int id_build { get; set; }
 
-    public string descritpion { get; set; }
+    public int id_project { get; set; }
+
+    public string name { get; set; }
 
     public string status { get; set; }
 
-    public Nullable<int> id_method { get; set; }
+    public Nullable<System.DateTime> date_start { get; set; }
 
-    public Nullable<int> id_attribute { get; set; }
+    public Nullable<System.DateTime> date_end { get; set; }
 
-    public Nullable<int> id_data { get; set; }
+    public string duration { get; set; }
+
+    public string browser { get; set; }
+
+    public string site { get; set; }
+
+    public string general_message { get; set; }
+
+    public string description { get; set; }
+
+    public string error_message { get; set; }
 
 
+
+    public virtual Build Build { get; set; }
+
+    public virtual Project Project { get; set; }
 
     [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
 
-    public virtual ICollection<ActionObject> ActionObject { get; set; }
-
-    public virtual Attribute Attribute { get; set; }
-
-    public virtual Data Data { get; set; }
-
-    public virtual Method Method { get; set; }
-
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-
-    public virtual ICollection<Step> Step { get; set; }
+    public virtual ICollection<Tools_Step> Tools_Step { get; set; }
 
 }
 

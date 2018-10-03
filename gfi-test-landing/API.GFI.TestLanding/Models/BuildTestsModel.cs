@@ -14,13 +14,13 @@ namespace API.GFI.TestLanding
             public DateTime? Date_end { get; set; }
             public string Status { get; set; }
             public string General_message { get; set; }
-            public string Error_message { get; set; }
-            public string Error_type { get; set; }
-            public string Logs { get; set; }
-            public string Test_name { get; set; }
+            public string Name { get; set; }
+            public string Browser { get; set; }
+            public string Site { get; set; }
+            public string Description { get; set; }
             public string Author { get; set; }
             public string Duration { get; set; }
-            public string Area { get; set; }
+            public string Error_message { get; set; }
             public byte[] Screenshot { get; set; }
 
     }

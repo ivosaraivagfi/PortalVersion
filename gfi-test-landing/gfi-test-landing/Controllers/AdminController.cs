@@ -347,8 +347,8 @@ namespace gfi_test_landing.Controllers
         [Authorize]
         public ActionResult ProjectList()
         {
-            var projectList = db.Project.Select(t => t);
-            return View(projectList.ToList());
+
+            return View();
         }
 
 
@@ -414,7 +414,7 @@ namespace gfi_test_landing.Controllers
                 if (response.IsSuccessStatusCode)
                 {
                     var project = response.Content.ReadAsAsync<ProjectModel>().Result;
-                    if(project.ByteImage != null)
+                    if (project.ByteImage != null)
                     {
                         var base64 = Convert.ToBase64String(project.ByteImage);
                         var imageSrc = String.Format("data:image/gif;base64,{0}", base64);
@@ -438,14 +438,121 @@ namespace gfi_test_landing.Controllers
             }
         }
 
+        //GET User Details
+        public async Task<ActionResult> UserDetails(string UserId)
+        {
+            using (var client = new HttpClient())
+            {
+                client.BaseAddress = new Uri("http://localhost:59443/");
+                client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+                HttpResponseMessage response = await client.GetAsync("api/GetUser/" + UserId);
+
+                if (response.IsSuccessStatusCode)
+                {
+                    var user = response.Content.ReadAsAsync<AspNetUsers>().Result;
+
+                    return View(user);
+                }
+                else
+                {
+                    return View();
+                }
+            }
+        }
+
+        //GET /Admin/UserEdit
+        public async Task<ActionResult> UserEdit(string UserId)
+        {
+            using (var client = new HttpClient())
+            {
+                client.BaseAddress = new Uri("http://localhost:59443/");
+                client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+                HttpResponseMessage response = await client.GetAsync("api/GetUser/" + UserId);
+
+                if (response.IsSuccessStatusCode)
+                {
+                    var user = response.Content.ReadAsAsync<AspNetUsers>().Result;
+
+                    return View(user);
+                }
+                else
+                {
+                    return View();
+                }
+            }
+
+        }
+
+        //POST Edit user
+        [Authorize]
+        [HttpPost]
+        public async Task<ActionResult> UserEdit(AspNetUsers user)
+        {
+            if (ModelState.IsValid)
+            {
+                //using (var client = new HttpClient())
+                //{
+                //    client.BaseAddress = new Uri("http://localhost:59443/");
+                //    client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+
+
+
+                //    //To send http Content serialize the object, encode and make it ByteArrayContent
+                //    var content = JsonConvert.SerializeObject(user);
+                //    var buffer = System.Text.Encoding.UTF8.GetBytes(content);
+                //    var byteContent = new ByteArrayContent(buffer);
+                //    byteContent.Headers.ContentType = new MediaTypeHeaderValue("application/json");
+
+                //    //Convert Image to Database Format
+
+                //    var result = client.PostAsync("api/EditUser", byteContent).Result;
+
+                //    HttpResponseMessage response = await client.GetAsync("api/EditUser");
+                //    if (response.IsSuccessStatusCode)
+                //    {
+                //        var responseProject = response.Content.ReadAsAsync<AspNetUsers>().Result;
+                //        return View(responseProject);
+                //    }
+                //    else
+                //    {
+                //        return View();
+                //    }
+                //}
+
+                try
+                {
+                    AspNetUsers userRow = db.AspNetUsers.Find(user.Id);
+                    // userRow.Email = user.Email;
+                    if (userRow != null)
+                    {
+                        userRow.PhoneNumber = user.PhoneNumber;
+                        userRow.ImageUrl = user.ImageUrl;
+                        userRow.FirstName = user.FirstName;
+                        userRow.LastName = user.LastName;
+
+                        db.Entry(userRow).State = EntityState.Modified;
+
+                        db.SaveChanges();
+                        return View(userRow);
+                    }
+
+                }
+                catch (Exception ex)
+                {
+                    return View(user);
+                }
+
+            }
+            return View();
+        }
 
 
         //GET: /Admin/UserList
         [Authorize]
-        public ActionResult UserList()
+        public ActionResult UsersList()
         {
-            var userList = db.AspNetUsers.Select(t => t);
-            return View(userList.ToList());
+
+            return View();
 
         }
 
@@ -459,9 +566,7 @@ namespace gfi_test_landing.Controllers
             }
 
             AspNetUsers aspNetUsers = db.AspNetUsers.Find(id);
-
-
-
+            
             //if (userRoleProjectModel != null)
             //{
             //    _RoleProjectByUser( roleUserByProj);
@@ -787,18 +892,11 @@ namespace gfi_test_landing.Controllers
             base.Dispose(disposing);
         }
 
-
         //
         // GET: /Admin/Register
         [Authorize]
         public ActionResult Register()
         {
-
-            if (ViewBag.roleList == null && ViewBag.projectList == null)
-            {
-                getRolesAndProjectsDropDown();
-            }
-
 
             return View();
         }
@@ -809,11 +907,10 @@ namespace gfi_test_landing.Controllers
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> Register(RegisterViewModel model)
         {
-            if (ViewBag.roleList == null && ViewBag.projectList == null)
+            if (model.ImageUrl == null)
             {
-                getRolesAndProjectsDropDown();
+                model.ImageUrl = "~/images/admin.jpg";
             }
-
 
             if (ModelState.IsValid)
             {
@@ -823,7 +920,7 @@ namespace gfi_test_landing.Controllers
 
                 if (result.Succeeded)
                 {
-                    await SignInManager.SignInAsync(user, isPersistent: false, rememberBrowser: false);
+                    //await SignInManager.SignInAsync(user, isPersistent: false, rememberBrowser: false);
 
 
                     // For more information on how to enable account confirmation and password reset please visit https://go.microsoft.com/fwlink/?LinkID=320771
@@ -839,15 +936,23 @@ namespace gfi_test_landing.Controllers
                     //             select s.Id).ToString();
                     // await this.UserManager.AddToRolesAsync(user.Id,model.NameRole);
 
-                    saveUserProject(model, user);
+                    UserRole userRole = new UserRole();
+                    userRole.id_project = model.IdProject;
+                    userRole.UserId = user.Id;
+                    userRole.RoleId = model.IdRole;
+                    userRole.date = DateTime.Now;
+
+                    db.UserRole.Add(userRole);
+
+                    db.SaveChanges();
 
 
                 }
                 AddErrors(result);
             }
-
+            return View();
             // If we got this far, something failed, redisplay form
-            return View(model);
+            //  return View(model);
         }
 
         public ApplicationSignInManager SignInManager
@@ -1033,7 +1138,7 @@ namespace gfi_test_landing.Controllers
 
             userRole.id_project = model.IdProject;
             userRole.UserId = user.Id;
-            userRole.RoleId = model.NameRole;
+            userRole.RoleId = model.IdRole;
             userRole.date = DateTime.Now;
 
             db.UserRole.Add(userRole);
@@ -1099,9 +1204,9 @@ namespace gfi_test_landing.Controllers
             }
         }
         #endregion
-    
-        
-     
+
+
+
 
     }
 }

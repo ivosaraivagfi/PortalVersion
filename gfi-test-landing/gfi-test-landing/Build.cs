@@ -15,10 +15,23 @@ namespace gfi_test_landing
 using System;
     using System.Collections.Generic;
     
-public partial class Report
+public partial class Build
 {
 
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
+    public Build()
+    {
+
+        this.Tools_Test = new HashSet<Tools_Test>();
+
+    }
+
+
     public int id { get; set; }
+
+    public int id_project { get; set; }
+
+    public string tool_name { get; set; }
 
     public Nullable<System.DateTime> date_start { get; set; }
 
@@ -28,29 +41,33 @@ public partial class Report
 
     public string general_message { get; set; }
 
-    public string error_message { get; set; }
-
-    public string warning_message { get; set; }
-
-    public string error_type { get; set; }
-
-    public string logs { get; set; }
-
     public Nullable<int> id_batteryTest { get; set; }
 
     public Nullable<int> id_machine { get; set; }
 
-    public string pass_tests { get; set; }
+    public Nullable<int> pass_tests { get; set; }
 
-    public Nullable<System.DateTime> duration { get; set; }
+    public string duration { get; set; }
 
     public Nullable<int> total_tests { get; set; }
+
+    public Nullable<int> failed_tests { get; set; }
+
+    public Nullable<int> skipped_tests { get; set; }
+
+    public string username { get; set; }
 
 
 
     public virtual BatteryTest BatteryTest { get; set; }
 
     public virtual Machine Machine { get; set; }
+
+    public virtual Project Project { get; set; }
+
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+
+    public virtual ICollection<Tools_Test> Tools_Test { get; set; }
 
 }
 

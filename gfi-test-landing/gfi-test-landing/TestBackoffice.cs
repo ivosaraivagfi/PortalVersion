@@ -15,24 +15,16 @@ namespace gfi_test_landing
 using System;
     using System.Collections.Generic;
     
-public partial class UserRole
+public partial class TestBackoffice
 {
 
-    public string UserId { get; set; }
+    public int id { get; set; }
 
-    public string RoleId { get; set; }
+    public byte[] image { get; set; }
 
-    public int id_project { get; set; }
+    public string color { get; set; }
 
-    public Nullable<System.DateTime> date { get; set; }
-
-
-
-    public virtual AspNetRoles AspNetRoles { get; set; }
-
-    public virtual AspNetUsers AspNetUsers { get; set; }
-
-    public virtual Project Project { get; set; }
+    public string id_user { get; set; }
 
 }
 

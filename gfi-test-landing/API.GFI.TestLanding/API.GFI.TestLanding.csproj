@@ -239,6 +239,7 @@
     <Compile Include="Method.cs">
       <DependentUpon>TestLandingEntity.tt</DependentUpon>
     </Compile>
+    <Compile Include="Models\AccountViewModels.cs" />
     <Compile Include="Models\AtributeModel.cs" />
     <Compile Include="Models\Bug_ReportingModel.cs" />
     <Compile Include="Models\Bug_Reporting_CollectionModel.cs" />
@@ -256,6 +257,8 @@
     <Compile Include="Models\Report_Test_CollectionModel.cs" />
     <Compile Include="Models\RequestModel.cs" />
     <Compile Include="Models\RoleModel.cs" />
+    <Compile Include="Models\RolesModel.cs" />
+    <Compile Include="Models\RoleUserByProject.cs" />
     <Compile Include="Models\ScheduleModel.cs" />
     <Compile Include="Models\ScheduleWeekDaysModel.cs" />
     <Compile Include="Models\StepModel.cs" />

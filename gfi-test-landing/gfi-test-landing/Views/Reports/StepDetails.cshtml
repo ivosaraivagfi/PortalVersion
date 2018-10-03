@@ -1,0 +1,105 @@
+﻿@model gfi_test_landing.Models.ToolsStep
+@{
+    ViewBag.Title = "TestDetaiLs";
+}
+
+<section class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                <h1>Step Details</h1>
+            </div>
+            <div class="col-sm-6">
+                <ol class="breadcrumb float-sm-right">
+                    <li class="breadcrumb-item"><a href="/Home/MyProjects">Home</a></li>
+                    <li class="breadcrumb-item"><a href="/Home/Builds">Builds List</a></li>
+                    <li class="breadcrumb-item"><a href="/Reports/BuildDetails">Builds Details</a></li>
+                    <li class="breadcrumb-item"><a href="/Reports/TestDetails?testId=@Model.Id_tools_test">Test Details</a></li>
+                    <li class="breadcrumb-item active">Step Details</li>
+                </ol>
+            </div>
+        </div>
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                <h4> Id: @Model.Id </h4>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="content">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-3 col-3">
+                <div class="callout">
+                    <h6 class="font-weight-bold"> Status:</h6>
+                    @Model.Status
+                </div>
+            </div><!-- /.col -->
+            <div class="col-3 col-3">
+                <div class="callout">
+                    <h6 class="font-weight-bold">Started at:</h6>
+                    @Model.Data_start
+                </div>
+            </div><!-- /.col -->
+            <div class="col-3 col-3">
+                <div class="callout">
+                    <h6 class="font-weight-bold">Ended at:</h6>
+                    @Model.Data_end
+                </div>
+            </div>
+            <div class="col-3 col-3">
+                <div class="callout">
+                    <h6 class="font-weight-bold"> Duration:</h6>
+                    @Model.Duration
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="container-fluid">
+
+    <div class="row">
+        <!--Mini table-->
+        <div class="col-md-12 col-sm-12">
+
+            <div class="card">
+                <!-- /.card-header -->
+                <div class="card-body table-responsive p-0">
+
+                    <table class="table table-hover">
+
+                        <tbody>
+                            <tr class="bg-secondary text-white">
+                                <th colspan="2" class="font-weight-bold">
+                                    More Information
+                                </th>
+                                @*<th style="font-weight:normal;">Machine Id: &nbsp;&nbsp;&nbsp; <span style="font-weight:bold;"> @Model.Id_machine</span></th>
+            <th style="font-weight:normal;">Battery Test Id  &nbsp;&nbsp;&nbsp; <span style="font-weight:bold;"> @Model.Id_batteryTest</span></th>*@
+                            </tr>
+                            <tr>
+                                <td><span class="tag tag-danger" style="font-weight:bold;">Description:</span></td>
+                                <td>@Model.Description </td>
+                            </tr>
+                            <tr>
+                                <td><span class="tag tag-danger" style="font-weight:bold;">Error Message:</span></td>
+                                <td>@Model.Error_message </td>
+                            </tr>
+                            <tr>
+                                <td><span class="tag tag-danger" style="font-weight:bold;">Test Name:</span></td>
+                                <td> @Model.Name</td>
+                            </tr>
+                            <tr>
+                                <td><span class="tag tag-danger" style="font-weight:bold;">Screenshot:</span></td>
+                                <td> @Model.Screenshot</td>
+                            </tr>
+
+                        </tbody>
+                    </table>
+                </div>
+                <!-- /.card-body -->
+            </div>
+        </div>
+    </div>
+</section>

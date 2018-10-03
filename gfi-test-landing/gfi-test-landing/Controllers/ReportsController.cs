@@ -252,5 +252,26 @@ namespace gfi_test_landing.Controllers
 
             }
         }
+
+        public async Task<ActionResult> StepDetails(int stepId)
+        {
+            using (var client = new HttpClient())
+            {
+                client.BaseAddress = new Uri("http://localhost:59443/");
+                client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+                HttpResponseMessage response = await client.GetAsync("api/GetStep/" + stepId);
+
+                if (response.IsSuccessStatusCode)
+                {
+                    var test = response.Content.ReadAsAsync<ToolsStep>().Result;
+                    return View(test);
+                }
+                else
+                {
+                    return View();
+                }
+
+            }
+        }
     }
 }
