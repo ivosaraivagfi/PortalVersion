@@ -557,6 +557,7 @@
     <Content Include="Content\dist\js\pages\dashboard.js" />
     <Content Include="Content\dist\js\pages\dashboard2.js" />
     <Content Include="Content\dist\js\pages\dashboard3.js" />
+    <Content Include="Content\dist\js\bootstrap-notify.js" />
     <Content Include="Content\dist\js\plugins\bootstrap\css\bootstrap-grid.css" />
     <Content Include="Content\dist\js\plugins\bootstrap\css\bootstrap-grid.min.css" />
     <Content Include="Content\dist\js\plugins\bootstrap\css\bootstrap-reboot.css" />
@@ -1350,6 +1351,7 @@
     <Content Include="images\logo.png" />
     <Content Include="images\logo2.png" />
     <Content Include="images\logo4.png" />
+    <Content Include="images\missing-image.png" />
     <Content Include="images\oie_18181513VO0aYyFw.jpg" />
     <Content Include="images\placeholder.png" />
     <Content Include="images\twitter_corner_black.png" />
@@ -1894,6 +1896,9 @@
     <Content Include="Views\Admin\UserEdit.cshtml" />
     <Content Include="Views\Admin\_RoleProjectByUser.cshtml" />
     <Content Include="Views\Reports\StepDetails.cshtml" />
+    <Content Include="Views\Admin\Customize.cshtml" />
+    <Content Include="Views\Admin\ProjectEdit.cshtml" />
+    <Content Include="Views\Admin\_UsersList.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

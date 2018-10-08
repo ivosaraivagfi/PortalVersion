@@ -1,0 +1,144 @@
+﻿@model gfi_test_landing.Models.ProjectModel
+
+<section class="content-header">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-sm-6 mx-auto offset-3">
+                <h1>Project Edit</h1>
+            </div>
+            <div class="col-sm-6">
+                <ol class="breadcrumb float-sm-right">
+                    <li class="breadcrumb-item"><a href="/Home/MyProjects">Home</a></li>
+                    <li class="breadcrumb-item"><a href="/Admin/ProjectList">Project List</a></li>
+                    <li class="breadcrumb-item"><a href="/Admin/ProjectDetails?ProjectId=@Model.Id">Project Details</a></li>
+                    <li class="breadcrumb-item active">Edit Project</li>
+                </ol>
+            </div>
+        </div>
+    </div><!-- /.container-fluid -->
+</section>
+<section class="content">
+    <div class="container-fluid">
+        <div class="row">
+
+            <div class="alert alert-success alert-dismissible mx-auto d-none" id="created-alert">
+                <h5><i class="icon fa fa-check"></i> Created!</h5>
+                <p id="created-text"></p>
+            </div>
+            <!-- left column -->
+            <!-- SELECT2 EXAMPLE -->
+            <div class="card card-primary col-12">
+                <div class="card-header">
+                    <h3 class="card-title">Edit Project</h3>
+                    <div class="card-tools">
+                    </div>
+                </div>
+                @*@using (Ajax.BeginForm("ProjectEdit", "Admin", new AjaxOptions { HttpMethod = "Post", OnSuccess = "OnSuccess", OnFailure = "OnFailure" }))
+                    {*@
+                <form id="editProject" method="post" enctype="multipart/form-data" onsubmit="return AjaxPost(this)">
+                    @Html.AntiForgeryToken()
+
+
+                    @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+                    @Html.HiddenFor(model => model.Id)
+
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-6">
+                                <!-- /.form-group -->
+                                <div class="form-group col-">
+                                    <label>Project Name</label>
+                                    @Html.EditorFor(model => model.Name, new { htmlAttributes = new { @class = "form-control" } })
+                                    @*@Html.ValidationMessageFor(model => model.Name, "", new { @class = "text-danger" })*@
+                                </div>
+                            </div>
+
+                            <div class="col-6">
+                                <!-- /.form-group -->
+                                <div class="form-group col-">
+                                    <label>Description</label>
+                                    @Html.EditorFor(model => model.Description, new { htmlAttributes = new { @class = "form-control" } })
+                                    @*@Html.ValidationMessageFor(model => model.Description, "", new { @class = "text-danger" })*@
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <!-- /.form-group -->
+                                <div class="form-group col-6">
+                                    <label>Image</label>
+                                    <image class="img-fluid" src="@Url.Content(Model.Logo_url)"></image>
+                                    @*@Html.ValidationMessageFor(model => model.Description, "", new { @class = "text-danger" })*@
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="form-group">
+                                    <label for="exampleInputFile">File input</label>
+                                    <div class="input-group">
+                                        <div class="custom-file">
+                                            @*<input type="file" class="custom-file-input" id="inputFile">*@
+                                            @Html.TextBoxFor(p => p.Image, new { @type = "file", @class = "form-control", id = "file" })
+                                            @*  <label class="custom-file-label" id="label-inputFile" for="inputFile">Choose file</label>
+                                            *@
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            @*<div>
+                                    @Html.ActionLink("Back to User Details", "UserDetails", new { UserId = Model.Id }, new { @class="btn btn-secondary"})
+                                </div>*@
+                        </div>
+                        <div class="col-12">
+                            <div class="form-actions form-group">
+                                <input type="submit" class="btn btn-success" value="Update" />
+                            </div>
+                        </div>
+                    </div>
+                </form>
+
+                @*}*@
+            </div>
+        </div>
+    </div>
+</section>
+
+<script src="~/Content/dist/js/bootstrap-notify.js"></script>
+<script>
+    function AjaxPost(formData) {
+        var ajaxConfig = {
+
+            type: "post",
+            url: "/Admin/ProjectEdit",
+            data: new FormData(formData),
+            success: function (result) {
+                var name = $("#project-name").val();
+
+                $.notify({
+                    title: '<strong>Success!</strong><br />',
+                    message: 'Project ' + name + ' edited successfully.'
+                }, {
+                        type: 'success'
+                    });
+                window.location.reload();
+            },
+            fail: function (result) {
+                $.notify({
+                    title: '<strong>Error!</strong><br />',
+                    message: 'Whoops! That didn\'t go so well did it ?.'
+                }, {
+                        type: 'danger'
+                    });
+            }
+        }
+
+        if ($(formData).attr('enctype') == "multipart/form-data") {
+            ajaxConfig['contentType'] = false;
+            ajaxConfig['processData'] = false;
+        }
+
+        $.ajax(ajaxConfig);
+        return false;
+    }
+</script>
+
+
+

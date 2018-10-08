@@ -29,10 +29,7 @@
                     <h5><i class="icon fa fa-check"></i> Created!</h5>
                 </div>*@
 
-            <div id="dialog" class="alert alert-success alert-dismissible d-none" style="position:relative;">
-                <p style="text-align:center"> </p>
-                <h5><i class="icon fa fa-check"></i> Deleted!</h5>
-            </div>
+
 
             <div id="addModal" class="modal fade">
                 <div class="modal-dialog modal-confirm">
@@ -68,8 +65,8 @@
                                     <th>Id</th>
                                     <th>Name</th>
                                     <th>Description</th>
-                                    <th>Edit</th>
-                                    <th>Delete</th>
+                                    <th></th>
+                                    @*<th>Delete</th>*@
                                 </tr>
                             </thead>
                             <tbody></tbody>
@@ -85,56 +82,118 @@
         <!-- /.row -->
     </div><!-- /.container-fluid -->
     <!-- Modal -->
+    <!-- AddNewUser Modal HTML -->
+    <div id="AddUserModal" class="modal fade">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <form>
+                    <div class="modal-header">
+                        <h4 class="modal-title">Edit Role</h4>
+                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="form-group">
+                            <label>Username</label>
+                            <p id="labelProjectName" type="email" class="form-control" required></p>
+
+                        </div>
+                        <div class="form-group">
+                            <label>Select Role</label>
+                            @Html.DropDownList("idUser", Enumerable.Empty<SelectListItem>(), "Select User", new { @id = "UsersDropdown", @class = "form-control select2" })
+
+                        </div>
+                        <div class="form-group">
+                            <label>Select Role</label>
+                            @Html.DropDownList("idRole", Enumerable.Empty<SelectListItem>(), "Select Role", new { @id = "RolesDropdown", @class = "form-control select2" })
+
+                        </div>
+
+                    </div>
+                    <div class="modal-footer">
+                        <input type="button" class="btn btn-default" data-dismiss="modal" value="Cancel">
+                        <input id="AddUser" class="btn btn-success" value="Save">
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
 </section>
 
 <script src="~/Scripts/jquery.unobtrusive-ajax.js"></script>
 
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
-
+<script src="~/Content/dist/js/bootstrap-notify.js"></script>
 <script>
+
+    var idProject;
+
     $(document).ready(function () {
 
         getProjects();
+        $('[data-toggle="tooltip"]').tooltip();
+        $('#AddUserModal').addClass('show');
+
+        //Ajax get all roles
+        $.ajax({
+            type: "get",
+            url: "http://localhost:59443/api/GetRoles",
+            contentType: "application/json;charset=utf-8",
+            dataType: "json",
+            data: {},
+            success: function (result) {
+                $.each(result, function (i) {
+
+                    var row = $('#RolesDropdown').append($('<option></option>').val(result[i].Id).html(result[i].Name));
+
+
+
+                });
+            },
+            failure: function () {
+                alert("Error");
+            }
+        });
+
+        //Ajax get all users
+        $.ajax({
+            type: "get",
+            url: "http://localhost:59443/api/GetUsers",
+            contentType: "application/json;charset=utf-8",
+            dataType: "json",
+            data: {},
+            success: function (result) {
+                $.each(result, function (i) {
+
+                    var row = $('#UsersDropdown').append($('<option></option>').val(result[i].Id).html(result[i].Email));
+
+                });
+            },
+            failure: function () {
+                alert("Error");
+            }
+        });
+
+        //Disabled label
+        $('select option:contains("Select Role")').prop('disabled', true);
 
 
     });
 
+    //When click on the button to add new user
+    $(document).on("click", ".edit", function () {
 
-    function OnSuccess(value, status) {
-        console.log(status);
-
-        var name = $("#project-name").val();
-        //$('#created-text').text("Project" +" " + name);
-        //        $("#created-alert").addClass("d-block");
-
-        $('#dialog p').text("Project" + " " + name);
-        $('#dialog').addClass("d-block");
-
-        $("#dialog").dialog({
-
-            closeText: "",
+        idProject = $(this).parent().closest("tr").find('td:first').text();
+        var projectName = $(this).parent().closest("tr").find('td:nth-child(2)').text();
+        var roleName = $(this).parent().closest("tr").find('td:nth-child(3)').text();
+        $("#labelProjectName").html(projectName);
+        $('#RolesDropdown > option').each(function () {
+            if ($(this).text() == roleName) {
+                $(this).attr('disabled', true);
+            }
 
         });
-        $(".ui-button").addClass("d-none");
-
-        setTimeout(function () {
-            location.reload();
-
-        }, 3000);
-    }
-
-    function OnFailure(response) {
-        alert("Whoops! That didn't go so well did it?");
-    }
-
-    $("#inputFile").change(function () {
-        var value = $("#inputFile").val();
-        $("#label-inputFile").text(value);
-
-        var file = $('form input[type=file]')[0].files[0];
-        console.log(file);
     });
-
+    
 
     function getProjects() {
         $.ajax({
@@ -159,16 +218,18 @@
     function setDataTableValues(Id, Name, Description) {
 
         var edit = '<a href="http://localhost:54669/Admin/ProjectDetails?ProjectId=' + Id +
-            '" target="_blank"><i class="fa fa-edit" style="font-size:24px; color:green"></i></a>';
+            '" target="_blank"><i class="fa fa-edit" style="font-size:24px; color:green" title="Details"></i></a>';
         var del = '<a data-toggle="modal" class="tem-trigger-btn"' +
-            ' data-toggle="modal" href="#addModal"><i class="fa fa-trash-o" id="i-con" style="font-size:24px; color:red"></i></a>';
+            ' data-toggle="modal" href="#addModal"><i class="fa fa-trash-o" id="i-con" style="font-size:24px; color:red" title="Delete"></i></a>';
+        var adduser = '<a href="#AddUserModal" class="edit" data-toggle="modal"><i class="material-icons fa fa-plus-square-o" style="font-size:24px; color:green" data-toggle="tooltip" title="Add New User"></i></a>';
+
 
         var row = '<tr>' +
             '<td>' + Id + '</td>' +
             '<td>' + Name + '</td>' +
             '<td>' + Description + '</td>' +
-            '<td>' + edit + '</td>' +
-            '<td>' + del + '</td>' +
+            '<td>' + edit + " " + del + " " + adduser +'</td>' +
+            //'<td>''</td>' +
             '</tr>';
 
         $('#projects-table > tbody').append(row);
@@ -192,33 +253,70 @@
 
     });
 
-
+    //Ajx delete project
     function deleteProject(projectId, projectName) {
         $.ajax({
             type: "DELETE",
             url: 'http://localhost:59443/api/DeleteProject/' + projectId,
 
+        }).done(function (result) {
+
+
+            $.notify({
+                title: '<strong>Success!</strong><br />',
+                message: 'Project ' + projectName + ' deleted successfully.'
+            }, {
+                    type: 'success'
+                });
+            window.location.reload();
+
+        }).fail(function (result) {
+            $.notify({
+                title: '<strong>Failded!</strong><br />',
+                message: 'Whoops! Unable to delete this project.'
+            }, {
+                    type: 'danger'
+                });
+        });
+
+    }
+
+    //Ajax set data for add new user the project
+    $(document).on("click", "#AddUser", function () {
+        $('#AddUserModal').modal('hide');
+        var data = {
+            RoleId: $('#RolesDropdown').val(),
+            id_project: idProject,
+            UserId: $('#UsersDropdown').val(),
+        }
+        $.ajax({
+            url: 'http://localhost:59443/api/setUserRole',
+            type: 'POST',
+            // dataType: 'json',
+            data: data,
             success: function (result) {
 
-                $('#dialog p').text("Project" + " " + projectName);
-                $('#dialog').addClass("d-block");
+                $.notify({
+                    title: '<strong>Success!</strong><br />',
+                    message: 'Project Added successfully.'
+                }, {
+                        type: 'success'
+                    });
+             
+            },
 
-                $("#dialog").dialog({
-                    position: { my: "left top", at: "left bottom", of: button },
-                    closeText: "",
-
-                });
-                $(".ui-button").addClass("d-none");
-                setTimeout(function () {
-                    location.reload();
-
-                }, 3000);
-
-
+            fail: function (result) {
+                $.notify({
+                    title: '<strong>Error!</strong><br />',
+                    message: 'Whoops! That didn\'t go so well did it ?.'
+                }, {
+                        type: 'danger'
+                    });
             }
         });
 
-    }</script>
+    })
+</script>
 
 <style>
 

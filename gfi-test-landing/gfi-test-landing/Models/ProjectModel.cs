@@ -12,10 +12,18 @@ namespace gfi_test_landing.Models
         public int Id { get; set; }
 
         [MaxLength(100)]
+        [Required]
+        [Display(Name = "Project Name")]
+        [StringLength(100, ErrorMessage = "The {0} must be at least {2} characters long.", MinimumLength = 3)]
         public string Name { get; set; }
 
         [MaxLength(100)]
+        [Required]
+        [Display(Name = "Project Description")]
+        [StringLength(100, ErrorMessage = "The {0} must be at least {2} characters long.", MinimumLength = 3)]
         public string Description { get; set; }
+
+
         public string Logo_url { get; set; }
         public HttpPostedFileBase Image { get; set; }
         public byte[] ByteImage { get; set; }

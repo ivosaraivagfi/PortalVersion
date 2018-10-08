@@ -6,12 +6,12 @@
     <div class="container-fluid">
         <div class="row">
             <div class="col-sm-6 mx-auto offset-3">
-                <h1>User Details </h1>
+                <h1>Project Details </h1>
             </div>
             <div class="col-sm-6">
                 <ol class="breadcrumb float-sm-right">
                     <li class="breadcrumb-item"><a href="/Home/MyProjects">Home</a></li>
-                    <li class="breadcrumb-item"><a href="/Admin/Register">Projects List</a></li>
+                    <li class="breadcrumb-item"><a href="/Admin/CreateProject">Create Project</a></li>
                     <li class="breadcrumb-item active">Project Details</li>
                 </ol>
             </div>
@@ -39,16 +39,19 @@
             @*<form id="create-project">*@
             <div class="card-body">
                 <div class="row">
-                    <div class="col-md-4"><img class="img-fluid" src="~/images/admin.jpg" alt="User profile picture" width="150rem"></div>
+                    <div class="col-md-4">
+
+                        <img class="img-fluid" src="@Url.Content(Model.Logo_url)" alt="User profile picture" width="150rem">
 
 
+                    </div>
 
                     @*<div class="info-box-content">*@
                     <div class="col-md-4">
 
-                        <h5> Name:</h5>
+                        <h5 class="font-weight-bold"> Name:</h5>
                         <h6>@Model.Name</h6>
-                        <h5>Description:</h5>
+                        <h5 class="font-weight-bold">Description:</h5>
                         <h6>@Model.Description</h6>
                     </div>
                     @*</div>*@
@@ -57,7 +60,7 @@
                     <div class="col-12 mt-3">
                         <div class="form-actions form-group">
 
-                            @Html.ActionLink("Update", "UserEdit", new { UserId = Model.Id }, new { @class = "btn btn-success", title = "Update user details" })
+                            @Html.ActionLink("Update", "ProjectEdit", new { ProjectId = Model.Id }, new { @class = "btn btn-success", title = "Update project details" })
                         </div>
                     </div>
                 </div>
@@ -72,7 +75,7 @@
     <!-- /.card -->
     <div class="card">
         <div class="card-header">
-            <h3 class="card-title">Projects List</h3>
+            <h3 class="card-title">Users & Roles List</h3>
         </div>
         <!-- /.card-header -->
         <div class="card-body">
@@ -80,9 +83,11 @@
                 <thead>
                     <tr>
                         <th hidden></th>
-                        <th>Project Name</th>
+                        <th hidden></th>
+                        <th>User</th>
                         <th>Role</th>
                         <th>Details</th>
+
                     </tr>
                 </thead>
                 <tbody></tbody>
@@ -95,7 +100,7 @@
 
 <!--Edit modal-->
 <!-- Edit Modal HTML -->
-<div id="editEmployeeModal" class="modal fade">
+<div id="editRolesModal" class="modal fade">
     <div class="modal-dialog">
         <div class="modal-content">
             <form>
@@ -125,18 +130,79 @@
     </div>
 </div>
 
+<div id="addModal" class="modal fade">
+    <div class="modal-dialog modal-confirm">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Are you sure?</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+            </div>
+            <div class="modal-body">
+                <Label id="idUserDelete" hidden></Label>
+                <p>Do you really want to delete the <Label id="label-delete"></Label> Project? This process cannot be undone.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-info" data-dismiss="modal">Cancel</button>
+                <button type="button" id="idDelete" class="btn btn-danger" data-toggle="modal" data-target="#myModal1">Delete </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+<script src="~/Scripts/jquery.unobtrusive-ajax.js"></script>
+<script src="~/Content/dist/js/bootstrap-notify.js"></script>
 
 <script>
-    var idProject;
+    $(document).on("click", "#editRole", function () {
+
+        $('#editRolesModal').modal('hide');
+        var data = {
+            RoleId: $('#RolesDropdown').val(),
+            id_project: idProject,
+            UserId: idUser,
+        }
+        $.ajax({
+            url: 'http://localhost:59443/api/setUserRole',
+            type: 'POST',
+            // dataType: 'json',
+            data: data,
+            success: function (result) {
+                var name = $("#project-name").val();
+
+                $.notify({
+                    title: '<strong>Success!</strong><br />',
+                    message: 'Role edited successfully.'
+                }, {
+                        type: 'success'
+                    });
+                window.location.reload();
+            },
+
+            fail: function (result) {
+                $.notify({
+                    title: '<strong>Error!</strong><br />',
+                    message: 'Whoops! That didn\'t go so well did it ?.'
+                }, {
+                        type: 'danger'
+                    });
+            }
+        });
+
+    })
+
+    var idProject = null;
+    var idUSer = null;
     var id = @Html.Raw(Json.Encode(Model.Id));
     getRoleUserByProject();
 
     $(document).ready(function ( ) {
 
-        
+
         $('[data-toggle="tooltip"]').tooltip();
-        $('#editEmployeeModal').addClass('show');
+        $('#editRolesModal').addClass('show');
 
         $.ajax({
             type: "get",
@@ -161,10 +227,10 @@
     });
 
     $(document).on("click", ".edit", function () {
-
+        idUser = $(this).parent().closest("tr").find('td:nth-child(2)').text();
         idProject = $(this).parent().closest("tr").find('td:first').text();
-        var projectName = $(this).parent().closest("tr").find('td:nth-child(2)').text();
-        var roleName = $(this).parent().closest("tr").find('td:nth-child(3)').text();
+        var projectName = $(this).parent().closest("tr").find('td:nth-child(3)').text();
+        var roleName = $(this).parent().closest("tr").find('td:nth-child(4)').text();
         $("#labelProjectName").html(projectName);
         $('#RolesDropdown > option').each(function () {
             if ($(this).text() == roleName) {
@@ -189,7 +255,7 @@
                 console.log(RoleProjectByUser);
 
                 RoleProjectByUser.forEach(function (roleproject) {
-                    setDataTableValues(roleproject.Username, roleproject.NameRole, roleproject.IdProject, roleproject.IdRole, roleproject.IdUser);
+                    setDataTableValues(roleproject.Username, roleproject.NameRole, roleproject.IdProject, roleproject.IdUser, roleproject.IdRole);
                 });
 
             }).always(function () {
@@ -198,17 +264,194 @@
             });
 
     }
-    function setDataTableValues( Username, Role, Id) {
 
-        var details = '<a href="#editEmployeeModal" class="edit" data-toggle="modal"><i class="material-icons fa fa-pencil-square-o" style="font-size:24px; color:green" data-toggle="tooltip" title="Edit"></i></a>';
-        //var del = '<a data-toggle="modal" data-id="' + Id + '" class="tem-trigger-btn" data-toggle="modal" href="#addModal"><i class="fa fa-trash-o" style="font-size:24px; color:red"></i></a>';
-        
+    function setDataTableValues(Username, Role, Id, IdUser)  {
+
+        var details = '<a href="#editRolesModal" class="edit" data-toggle="modal"><i class="material-icons fa fa-pencil-square-o" style="font-size:24px; color:green" data-toggle="tooltip" title="Edit"></i></a>';
+        var del = '<a data-toggle="modal" class="tem-trigger-btn"' +
+            ' data-toggle="modal" href="#addModal"><i class="fa fa-trash-o" id="i-con" style="font-size:24px; color:red" title="Delete"></i></a>';
+        //var adduser = '<a href="#AddUserModal" class="edit" data-toggle="modal"><i class="material-icons fa fa-plus-square-o" style="font-size:24px; color:green" data-toggle="tooltip" title="Edit"></i></a>';
+
         var row = '<tr>' +
             '<td hidden>' + Id + '</td>' +
+            '<td hidden>' + IdUser + '</td>' +
             '<td>' + Username + '</td>' +
             '<td>' + Role + '</td>' +
-            '<td>' + details + /*""+ del +*/'</td>' +
+            '<td>' + details +" "+ del +'</td>' +
+
             '</tr>';
 
         $('#projectRole-table > tbody').append(row);
-    }</script>
+    }
+
+    //On click on trash icon
+    //Delete - ********ver query para roles & users associação***********
+    $(document).on("click", ".tem-trigger-btn", function () {
+        idUser = $(this).parent().closest("tr").find('td:nth-child(2)').text();
+        idProject = $(this).parent().closest("tr").find('td:first').text();
+        var projectName = $(this).parent().closest("tr").find('td:nth-child(3)').text();
+        var roleName = $(this).parent().closest("tr").find('td:nth-child(4)').text();
+        $("#label-delete").html(projectName);
+        $('#addModal').addClass('show');
+
+        //On click on modal button Delete
+        $(document).on("click", "#idDelete", function () {
+            $('#addModal').modal('hide');
+            deleteProject(idProject, idUser);
+        });
+
+    });
+
+    //Ajx delete project
+    function deleteProject(projectId, idUser) {
+        //var data = {
+        //    ProjectId = projectId,
+        //    IdUser = userId,
+        //}
+        $.ajax({
+            type: "DELETE",
+            url: 'http://localhost:59443/api/DeleteUserRole',
+            contentType: "application/json",
+            dataType: "json",
+            data: '{UserId: "' + idUser + '", id_project: "' + projectId + '" }',
+
+        }).done(function (result) {
+
+
+            $.notify({
+                title: '<strong>Success!</strong><br />',
+                message: 'Association deleted successfully.'
+            }, {
+                    type: 'success'
+                });
+            window.location.reload();
+
+        }).fail(function (result) {
+            $.notify({
+                title: '<strong>Failded!</strong><br />',
+                message: 'Whoops! Unable to delete this project.'
+            }, {
+                    type: 'danger'
+                });
+        });
+
+    }
+
+</script>
+
+
+<style>
+
+    .card-body .dataTables_wrapper .row .col-md-6 .dataTables_length .form-control {
+        display: inline-block;
+        width: auto;
+    }
+
+    .card-body .dataTables_wrapper .row .col-md-6 .dataTables_filter .form-control {
+        display: inline-block;
+        width: auto;
+    }
+
+    body {
+        font-family: 'Varela Round', sans-serif;
+    }
+
+    .modal-confirm {
+        color: #636363;
+        width: 400px;
+    }
+
+        .modal-confirm .modal-content {
+            padding: 20px;
+            border-radius: 5px;
+            border: none;
+            text-align: center;
+            font-size: 14px;
+        }
+
+        .modal-confirm .modal-header {
+            border-bottom: none;
+            position: relative;
+        }
+
+        .modal-confirm h4 {
+            text-align: center;
+            font-size: 26px;
+            margin: 30px 0 -10px;
+        }
+
+        .modal-confirm .close {
+            position: absolute;
+            top: -5px;
+            right: -2px;
+        }
+
+        .modal-confirm .modal-body {
+            color: #999;
+        }
+
+        .modal-confirm .modal-footer {
+            border: none;
+            text-align: center;
+            border-radius: 5px;
+            font-size: 13px;
+            padding: 10px 15px 25px;
+        }
+
+            .modal-confirm .modal-footer a {
+                color: #999;
+            }
+
+        .modal-confirm .icon-box {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto;
+            border-radius: 50%;
+            z-index: 9;
+            text-align: center;
+            border: 3px solid #f15e5e;
+        }
+
+            .modal-confirm .icon-box i {
+                color: #f15e5e;
+                font-size: 46px;
+                display: inline-block;
+                margin-top: 13px;
+            }
+
+        .modal-confirm .btn {
+            color: #fff;
+            border-radius: 4px;
+            background: #60c7c1;
+            text-decoration: none;
+            transition: all 0.4s;
+            line-height: normal;
+            min-width: 120px;
+            border: none;
+            min-height: 40px;
+            border-radius: 3px;
+            margin: 0 5px;
+            outline: none !important;
+        }
+
+        .modal-confirm .btn-info {
+            background: #c1c1c1;
+        }
+
+            .modal-confirm .btn-info:hover, .modal-confirm .btn-info:focus {
+                background: #a8a8a8;
+            }
+
+        .modal-confirm .btn-danger {
+            background: #f15e5e;
+        }
+
+            .modal-confirm .btn-danger:hover, .modal-confirm .btn-danger:focus {
+                background: #ee3535;
+            }
+
+    .trigger-btn {
+        display: inline-block;
+        margin: 100px auto;
+    }
+</style>

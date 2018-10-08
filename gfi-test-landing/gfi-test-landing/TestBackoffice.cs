@@ -12,20 +12,23 @@
 namespace gfi_test_landing
 {
 
-using System;
+    using System;
     using System.Collections.Generic;
-    
-public partial class TestBackoffice
-{
+    using System.Web;
 
-    public int id { get; set; }
+    public partial class TestBackoffice
+    {
 
-    public byte[] image { get; set; }
+        public int id { get; set; }
 
-    public string color { get; set; }
+        public byte[] image { get; set; }
 
-    public string id_user { get; set; }
+        public string color { get; set; }
 
-}
+        public string id_user { get; set; }
+
+        public HttpPostedFileBase imageFile { get; set; }
+
+    }
 
 }

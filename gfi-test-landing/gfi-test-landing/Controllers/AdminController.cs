@@ -365,44 +365,114 @@ namespace gfi_test_landing.Controllers
         [HttpPost]
         public ActionResult CreateProject(ProjectModel project)
         {
+            if (ModelState.IsValid)
+            {
+                using (var client = new HttpClient())
+                {
+
+                    saveImage(project);
+
+                    client.BaseAddress = new Uri("http://localhost:59443/");
+                    client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+
+                    project.Image = null;
+                    //    //Convert Image to Byte[]
+                    //if (project.Image != null)
+                    //    {
+                    //        project.ByteImage = new byte[project.Image.ContentLength];
+                    //        project.Image.InputStream.Read(project.ByteImage, 0, project.Image.ContentLength);
+                    //        project.Image = null;
+                    //    }
+
+                    //    //To send http Content serialize the object, encode and make it ByteArrayContent
+
+                    var content = JsonConvert.SerializeObject(project);
+                    var buffer = System.Text.Encoding.UTF8.GetBytes(content);
+                    var byteContent = new ByteArrayContent(buffer);
+                    byteContent.Headers.ContentType = new MediaTypeHeaderValue("application/json");
+
+                    //Convert Image to Database Format
+
+                    var result = client.PostAsync("api/CreateProject", byteContent).Result;
+
+
+                    if (result.IsSuccessStatusCode)
+                    {
+                        var responseProject = result.Content.ReadAsAsync<ProjectModel>().Result;
+                        return View(responseProject);
+                    }
+                    else
+                    {
+                        return View();
+                    }
+                }
+            }
+            return View(project);
+
+        }
+
+      //  GET /Admin/ProjectEdit
+       
+        public async Task<ActionResult> ProjectEdit(int ProjectId)
+        {
             using (var client = new HttpClient())
             {
                 client.BaseAddress = new Uri("http://localhost:59443/");
                 client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+                HttpResponseMessage response = await client.GetAsync("api/GetProject/" + ProjectId);
 
-                //Convert Image to Byte [] 
-                if (project.Image != null)
+                if (response.IsSuccessStatusCode)
                 {
-                    project.ByteImage = new byte[project.Image.ContentLength];
-                    project.Image.InputStream.Read(project.ByteImage, 0, project.Image.ContentLength);
-                    project.Image = null;
-                }
+                    var project = response.Content.ReadAsAsync<ProjectModel>().Result;
 
-                //To send http Content serialize the object, encode and make it ByteArrayContent
-                var content = JsonConvert.SerializeObject(project);
-                var buffer = System.Text.Encoding.UTF8.GetBytes(content);
-                var byteContent = new ByteArrayContent(buffer);
-                byteContent.Headers.ContentType = new MediaTypeHeaderValue("application/json");
-
-                //Convert Image to Database Format
-
-                var result = client.PostAsync("api/CreateProject", byteContent).Result;
-
-
-                if (result.IsSuccessStatusCode)
-                {
-                    var responseProject = result.Content.ReadAsAsync<ProjectModel>().Result;
-                    return View(responseProject);
+                    return View(project);
                 }
                 else
                 {
                     return View();
                 }
             }
+
         }
 
+        //POST Edit Project
+        [Authorize]
+        [HttpPost]
+        public ActionResult ProjectEdit(ProjectModel project)
+        {
+            if(project.Image != null)
+            {
+                saveImage(project);
+            }
+            else
+            {
+                project.Logo_url = "~/images/missing-image.png";
+            }
+            project.Image = null;
+            
 
 
+            using (var client = new HttpClient())
+            {
+                client.BaseAddress = new Uri("http://localhost:59443/api/");
+
+                //HTTP POST
+                var putTask = client.PutAsJsonAsync<ProjectModel>("ProjectEdit", project);
+                putTask.Wait();
+
+                var result = putTask.Result;
+                if (result.IsSuccessStatusCode)
+                {
+
+                    return View(project);
+                }
+            }
+            return View(project);
+        
+
+    }
+
+        // GET porject details
         public async Task<ActionResult> ProjectDetails(int ProjectId)
         {
             using (var client = new HttpClient())
@@ -486,7 +556,8 @@ namespace gfi_test_landing.Controllers
         //POST Edit user
         [Authorize]
         [HttpPost]
-        public async Task<ActionResult> UserEdit(AspNetUsers user)
+        [ValidateAntiForgeryToken]
+        public ActionResult UserEdit(AspNetUsers user)
         {
             if (ModelState.IsValid)
             {
@@ -556,6 +627,47 @@ namespace gfi_test_landing.Controllers
 
         }
 
+        [Authorize]
+        public ActionResult Customize()
+        {
+            TestBackoffice line = db.TestBackoffice.Where(t => t.id == 1).Select(t => t).FirstOrDefault();
+            return View(line);
+        }
+
+        [Authorize]
+        [ValidateAntiForgeryToken]
+        [HttpPost]
+        public async Task<ActionResult> Customize(TestBackoffice modelBackoffice)
+        {
+            TestBackoffice line = db.TestBackoffice.Where(t => t.id == 1).Select(t => t).FirstOrDefault();
+
+            if (ModelState.IsValid)
+            {
+                line.color = modelBackoffice.color;
+                Session["changeImage"] = modelBackoffice.image;
+            }
+
+            if (modelBackoffice.imageFile != null)
+            {
+                line.image = new byte[modelBackoffice.imageFile.ContentLength];
+                modelBackoffice.imageFile.InputStream.Read(line.image, 0, modelBackoffice.imageFile.ContentLength);
+
+            }
+
+            db.Entry(line).State = EntityState.Modified;
+            await db.SaveChangesAsync();
+
+            Session["changeColor"] = "#" + line.color;
+            if (line.image != null)
+            {
+                var base64 = Convert.ToBase64String(line.image);
+                var imageSrc = String.Format("data:image/gif;base64,{0}", base64);
+                Session["changeImage"] = imageSrc;
+            }
+
+            return View(line);
+        }
+
         // GET: AspNetUsers/Details/5
         [Authorize]
         public ActionResult Details(string id)
@@ -566,7 +678,7 @@ namespace gfi_test_landing.Controllers
             }
 
             AspNetUsers aspNetUsers = db.AspNetUsers.Find(id);
-            
+
             //if (userRoleProjectModel != null)
             //{
             //    _RoleProjectByUser( roleUserByProj);
@@ -634,45 +746,6 @@ namespace gfi_test_landing.Controllers
             return PartialView(roleUserByProj);
 
         }
-
-        //// GET: AspNetUsers/Edit/5
-        //[Authorize]
-        //public ActionResult Edit(string id)
-        //{
-        //    if (id == null)
-        //    {
-        //        return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-        //    }
-        //    AspNetUsers aspNetUsers = db.AspNetUsers.Find(id);
-        //    if (aspNetUsers == null)
-        //    {
-        //        return HttpNotFound();
-        //    }
-        //    return View(aspNetUsers);
-        //}
-
-        //// POST: AspNetUsers/Edit/5
-        //// To protect from overposting attacks, please enable the specific properties you want to bind to, for 
-        //// more details see https://go.microsoft.com/fwlink/?LinkId=317598.
-        //[HttpPost]
-        //[ValidateAntiForgeryToken]
-        //public async Task<ActionResult> Edit([Bind(Include = "Id,Email,PhoneNumber,ImageUrl,FirstName,LastName")] AspNetUsers aspNetUsers)
-        //{
-        //    if (ModelState.IsValid)
-        //    {
-        //        AspNetUsers userRow = db.AspNetUsers.Single(u => u.Id == aspNetUsers.Id);
-        //        userRow.Email = aspNetUsers.Email;
-        //        userRow.PhoneNumber = aspNetUsers.PhoneNumber;
-        //        userRow.ImageUrl = aspNetUsers.ImageUrl;
-        //        userRow.FirstName = aspNetUsers.FirstName;
-        //        userRow.LastName = aspNetUsers.LastName;
-        //        db.Entry(userRow).State = EntityState.Modified;
-
-        //        await db.SaveChangesAsync();
-        //        return RedirectToAction("UserList");
-        //    }
-        //    return View(aspNetUsers);
-        //}
 
         //DELETE with modal
         [Authorize]
@@ -882,6 +955,23 @@ namespace gfi_test_landing.Controllers
 
         }
 
+        private void saveImage(ProjectModel model)
+        {
+            if (model.Image != null)
+            {
+                string fileName = Path.GetFileNameWithoutExtension(model.Image.FileName);
+                string extension = Path.GetExtension(model.Image.FileName);
+                fileName = fileName + DateTime.Now.ToString("yymmssfff") + extension;
+                model.Logo_url = "~/ImageProjects/" + fileName;
+                fileName = Path.Combine(Server.MapPath("~/ImageProjects/"), fileName);
+                model.Image.SaveAs(fileName);
+                
+            }
+            else
+            {
+                model.Logo_url = "~/images/missing-image.png";
+            }
+        }
 
         protected override void Dispose(bool disposing)
         {

@@ -92,7 +92,7 @@
         type: "GET",
         contentType: "application/json",
         dataType: "json",
-        url: 'http://localhost:59443/api/GetBuilds/' + @ViewBag.idProject
+        url: 'http://localhost:59443/api/GetBuilds/' + @ViewBag.idProject,
     })
     .done(function (builds) {
         console.log(builds);

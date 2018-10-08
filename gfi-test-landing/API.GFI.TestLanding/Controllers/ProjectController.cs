@@ -31,7 +31,7 @@ namespace API.Api.Controllers
             return ProjectList;
         }
 
-
+        
 
         [Route("api/GetProject/{idProject}")]
         public ProjectModel GetProject(int idProject)
@@ -49,6 +49,8 @@ namespace API.Api.Controllers
 
             return Project;
         }
+        
+
         //Builds substitui os Reports 
         [Route("api/GetBuilds/{idProject}")]
         public List<BuildModel> GetBuilds(int idProject)

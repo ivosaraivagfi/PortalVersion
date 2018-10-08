@@ -12,7 +12,7 @@
             <div class="col-sm-6">
                 <ol class="breadcrumb float-sm-right">
                     <li class="breadcrumb-item"><a href="#">Home</a></li>
-                    <li class="breadcrumb-item active">My Projects</li>
+                    @*<li class="breadcrumb-item active">My Projects</li>*@
                 </ol>
             </div>
         </div>
@@ -37,15 +37,17 @@
                             </div>
                         </div>
                         <div class="card-body">
-                            Start creating your amazing application!
+                            <img style="margin-top:5%; padding:10%;" class="card-img-top rounded mx-auto d-block" src="@Url.Content(li.Logo_url)" alt="">
+                            <br/>
+                            @Html.DisplayFor(modelItem => li.Description)
                         </div>
                         <!-- /.card-body -->
                         <div class="card-footer" style="text-align:center; background-color: white;">
                             @using (Html.BeginForm())
                             {
-                               
-                            <input type="hidden" value="@li.Id" name="project_id" />
-                            <input type="submit" class="btn btn-primary" value="Select project" />
+
+                                <input type="hidden" value="@li.Id" name="project_id" />
+                                <input type="submit" class="btn btn-primary" value="Select project" />
                             }
                         </div>
                         <!-- /.card-footer-->

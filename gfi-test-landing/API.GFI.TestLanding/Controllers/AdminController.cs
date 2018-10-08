@@ -11,10 +11,12 @@ using System.Web.Http.Cors;
 
 namespace API.Api.Controllers
 {
+
     [EnableCors(origins: "*", headers: "*", methods: "*")]
     public class AdminController : ApiController
     {
         private testLandingEntities db = new testLandingEntities();
+        
 
         [Route("api/GetProjects")]
         public List<ProjectModel> GetProjects()
@@ -58,26 +60,102 @@ namespace API.Api.Controllers
             }
         }
 
+        //[Route("api/GetProject/{idProject}")]
+        //[HttpGet]
+        //public IHttpActionResult Get(Project project)
+        //{
+        //    Project proj = null;
+
+        //    using (var db = new testLandingEntities())
+        //    {
+        //        proj = db.Project.Where(p => p.id == project.id).FirstOrDefault();
+        //    }
+
+        //    if (proj == null )
+        //    {
+        //        return NotFound();
+        //    }
+
+        //    return Ok(project);
+        //}
+
+
+        [Route("api/ProjectEdit")]
+        [HttpPut][HttpPost]
+        public IHttpActionResult ProjectEdit(ProjectModel project)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest("Not a valid model");
+
+            using (var db = new testLandingEntities())
+            {
+                var existingProject = db.Project.Where(p => p.id == project.Id)
+                                                        .FirstOrDefault();
+
+                if (existingProject != null)
+                {
+                    existingProject.name = project.Name;
+                    existingProject.description = project.Description;
+                    existingProject.logo_url = project.Logo_url;
+                    db.Entry(existingProject).State = EntityState.Modified;
+                    db.SaveChanges();
+                }
+                else
+                {
+                    return NotFound();
+                }
+            }
+
+            return Ok();
+        }
+
         //Delete Project 
         [Route("api/DeleteProject/{projectId}")]
-        public HttpResponseMessage Delete( int projectId)
+        [HttpDelete]
+        public HttpResponseMessage DeleteProject(int projectId)
         {
-            try {  
-            var project = db.Project.Find(projectId);
-            if(project == null)
-            {
-                return Request.CreateErrorResponse(HttpStatusCode.NotFound, "Project with Id = " + projectId + "Not Found");
-            }
-            db.Project.Remove(project);
-            db.SaveChanges();
+            if (projectId <= 0)
+                return Request.CreateErrorResponse(HttpStatusCode.BadRequest, "Not a valid student id");
 
-            return Request.CreateResponse(HttpStatusCode.OK);
+            try {
+                
+            using (var db = new testLandingEntities())
+            {
+                var project = db.Project
+                    .Where(p => p.id == projectId)
+                    .FirstOrDefault();
+
+                db.Entry(project).State = System.Data.Entity.EntityState.Deleted;
+                db.SaveChanges();
+
+                var message = Request.CreateResponse(HttpStatusCode.OK, project);
+                message.Headers.Location = new Uri(Request.RequestUri + project.name);
+                return message;
             }
-            catch(Exception ex)
+            }
+            catch (Exception ex)
             {
                 return Request.CreateErrorResponse(HttpStatusCode.BadRequest, ex);
             }
         }
+        //public HttpResponseMessage Project( int projectId)
+        //{
+        //    try {  
+        //    var project = db.Project.Find(projectId);
+        //    if(project == null)
+        //    {
+        //        return Request.CreateErrorResponse(HttpStatusCode.NotFound, "Project with Id = " + projectId + "Not Found");
+        //    }
+        //    db.Project.Remove(project);
+        //    db.SaveChanges();
+
+        //    return Request.CreateResponse(HttpStatusCode.OK);
+        //    }
+        //    catch(Exception ex)
+        //    {
+        //        return Request.CreateErrorResponse(HttpStatusCode.BadRequest, ex);
+        //    }
+        //}
 
 
         // Update Project
@@ -152,8 +230,8 @@ namespace API.Api.Controllers
             }
         }
 
-        [Route("api/DeleteProject/{UserId}")]
-        public HttpResponseMessage DeleteProject(string UserId)
+        [Route("api/DeleteUser/{UserId}")]
+        public HttpResponseMessage DeleteUser(string UserId)
         {
             try
             {
@@ -198,6 +276,31 @@ namespace API.Api.Controllers
             return UsersList;
         }
 
+        [Route("api/DeleteUserRole")]
+        public HttpResponseMessage DeleteUserRole([FromBody] UserRole userrole)
+        {
+            try
+            {
+
+                var usersrole = db.UserRole
+                .Where(ur => ur.id_project == userrole.id_project && ur.UserId == userrole.UserId)
+                .FirstOrDefault();
+
+                //db.Entry(user).State = System.Data.Entity.EntityState.Deleted;
+                db.UserRole.Remove(usersrole);
+                db.SaveChanges();
+
+                var message = Request.CreateResponse(HttpStatusCode.Created, usersrole);
+               // message.Headers.Location = new Uri(Request.RequestUri + usersrole);
+                return message;
+
+            }
+            catch (Exception ex)
+            {
+                return Request.CreateErrorResponse(HttpStatusCode.BadRequest, ex);
+            }
+        }
+
         [Route("api/setUserRole")]
         public HttpResponseMessage setUserRole(UserRole userRole)
         {
@@ -207,14 +310,18 @@ namespace API.Api.Controllers
 
                 var user = db.UserRole.Where(u => u.id_project == userRole.id_project && u.UserId == userRole.UserId).FirstOrDefault();
 
-                db.UserRole.Remove(user);
-                db.SaveChanges();
+                if (user != null)
+                {
+                    db.UserRole.Remove(user);
+                    db.SaveChanges();
+                }
 
                 UserRole ur = new UserRole
                 {
                     RoleId = userRole.RoleId,
                     UserId = userRole.UserId,
-                    id_project = userRole.id_project
+                    id_project = userRole.id_project,
+                    date = DateTime.Now
                 };
                 db.UserRole.Add(ur);
 

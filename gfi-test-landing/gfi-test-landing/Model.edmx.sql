@@ -2,7 +2,7 @@
 -- --------------------------------------------------
 -- Entity Designer DDL Script for SQL Server 2005, 2008, 2012 and Azure
 -- --------------------------------------------------
--- Date Created: 10/03/2018 11:19:55
+-- Date Created: 10/03/2018 14:38:33
 -- Generated from EDMX file: C:\Users\ivo.saraiva\Documents\Portal\PortalVersion\gfi-test-landing\gfi-test-landing\Model.edmx
 -- --------------------------------------------------
 
@@ -261,9 +261,6 @@ IF OBJECT_ID(N'[dbo].[WeekDays]', 'U') IS NOT NULL
 GO
 IF OBJECT_ID(N'[testLandingModelStoreContainer].[TestBackoffice]', 'U') IS NOT NULL
     DROP TABLE [testLandingModelStoreContainer].[TestBackoffice];
-GO
-IF OBJECT_ID(N'[testLandingModelStoreContainer].[database_firewall_rules]', 'U') IS NOT NULL
-    DROP TABLE [testLandingModelStoreContainer].[database_firewall_rules];
 GO
 
 -- --------------------------------------------------

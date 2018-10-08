@@ -1,48 +1,40 @@
 ﻿
 @model gfi_test_landing.Models.ProjectModel
-
 @{
     ViewBag.Title = "Create Project";
 }
-
 <section class="content-header">
     <div class="container-fluid">
         <div class="row">
             <div class="col-sm-6 mx-auto offset-3">
-                <h1>My Projects</h1>
+                <h1>Create Project</h1>
             </div>
             <div class="col-sm-6">
                 <ol class="breadcrumb float-sm-right">
-                    <li class="breadcrumb-item"><a href="#"></a></li>
+                    <li class="breadcrumb-item"><a href="/Home/MyProjects">Home</a></li>
                     <li class="breadcrumb-item active">Create Project</li>
                 </ol>
             </div>
         </div>
     </div><!-- /.container-fluid -->
 </section>
-
 <section class="content">
     <div class="container-fluid">
         <div class="row">
             @*<div class="alert alert-success alert-dismissible mx-auto d-none" id="created-alert">
-                <p id="created-text"></p>
-                <h5><i class="icon fa fa-check"></i> Created!</h5>
-            </div>*@
-
+                    <p id="created-text"></p>
+                    <h5><i class="icon fa fa-check"></i> Created!</h5>
+                </div>*@
 
             <div id="dialog" class="alert alert-success alert-dismissible d-none" style="position:relative;">
                 <p style="text-align:center"> </p>
                 <h5><i class="icon fa fa-check"></i> Deleted!</h5>
-
             </div>
-
-
 
             <div id="addModal" class="modal fade">
                 <div class="modal-dialog modal-confirm">
                     <div class="modal-content">
                         <div class="modal-header">
-
                             <h4 class="modal-title">Are you sure?</h4>
                             <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
                         </div>
@@ -51,7 +43,6 @@
                             <p>Do you really want to delete the <Label id="label-delete"></Label> Project? This process cannot be undone.</p>
                         </div>
                         <div class="modal-footer">
-
                             <button type="button" class="btn btn-info" data-dismiss="modal">Cancel</button>
                             <button type="button" id="idDelete" class="btn btn-danger" data-toggle="modal" data-target="#myModal1">Delete </button>
                         </div>
@@ -59,67 +50,69 @@
                 </div>
             </div>
 
-
-
             <!-- left column -->
             <!-- SELECT2 EXAMPLE -->
             <div class="card card-primary col-12">
                 <div class="card-header">
-                    <h3 class="card-title">Create Project</h3>
+                    <h3 class="card-title">Create New Project</h3>
                     <div class="card-tools">
                     </div>
                 </div>
-                @using (Ajax.BeginForm("CreateProject", "Admin", new AjaxOptions { HttpMethod = "Post", OnSuccess = "OnSuccess", OnFailure = "OnFailure" }))
-                {
-                    <!-- /.card-header -->
-                    @*<form id="create-project">*@
+                @*@using (Html.BeginForm(null, null, FormMethod.Post, new
+                    {
+                        enctype = "multipart/form-data",
+                        @id = "formCreateProject"
+                    }))
+                    {*@
+                <!-- /.card-header -->
+                <form id="createProject" method="post" enctype="multipart/form-data" onsubmit="return AjaxPost(this)">
+                   
                     <div class="card-body">
                         <div class="row">
-
                             <div class="col-6">
                                 <!-- /.form-group -->
                                 <div class="form-group">
                                     <label>Name</label>
                                     @*<input type="text" class="form-control" id="project-name" placeholder="Enter project Name">*@
                                     @Html.TextBoxFor(p => p.Name, new { @class = "form-control", id = "project-name", @placeholder = "Enter project Name" })
+                                    @Html.ValidationMessageFor(p => p.Name, "", new { @class = "text-danger" })
                                 </div>
+                             
                             </div>
                             <div class="col-6">
                                 <div class="form-group">
                                     <label>Description</label>
                                     @*<input type="text" class="form-control" id="project-description" placeholder="Enter project description">*@
-                                    @Html.TextBoxFor(p => p.Description, new { @class = "form-control", @placeholder = "Enter project description" })
+                                    @Html.TextBoxFor(p => p.Description, new { @class = "form-control", id = "project-description", @placeholder = "Enter project description" })
+                                    @Html.ValidationMessageFor(p => p.Description, "", new { @class = "text-danger" })
                                 </div>
+                              
                             </div>
-
                             <div class="col-6 mx-auto">
                                 <div class="form-group">
                                     <label for="exampleInputFile">File input</label>
                                     <div class="input-group">
                                         <div class="custom-file">
                                             @*<input type="file" class="custom-file-input" id="inputFile">*@
-
-                                            @Html.TextBoxFor(m => m.Image, new { @type = "file", @class = "custom-file-input form-control", id = "inputFile" })
-
-                                            <label class="custom-file-label" id="label-inputFile" for="inputFile">Choose file</label>
+                                            @Html.TextBoxFor(p => p.Image, new { @type = "file", @class = "form-control", id = "file" })
+                                            @*  <label class="custom-file-label" id="label-inputFile" for="inputFile">Choose file</label>
+                                            *@
                                         </div>
+
                                     </div>
                                 </div>
                             </div>
                             <div class="col-12">
                                 <div class="form-actions form-group">
-                                    <input type="submit" class="btn btn-primary" value="Create" />
+                                    <input type="submit" class="btn btn-success" value="Create" />
                                 </div>
                             </div>
                         </div>
                     </div>
-                    @*</form>*@
+                </form>
 
-                }
+                @*}*@
             </div>
-
-
-
 
 
             <div class="col-12">
@@ -137,8 +130,8 @@
                                     <th>Id</th>
                                     <th>Name</th>
                                     <th>Description</th>
-                                    <th>Edit</th>
-                                    <th>Delete</th>
+                                    <th></th>
+                                    
                                 </tr>
                             </thead>
                             <tbody></tbody>
@@ -151,67 +144,166 @@
             <!--/.col (left) -->
             <!-- right column -->
         </div>
-            <!-- /.row -->
-        </div><!-- /.container-fluid -->
+        <!-- /.row -->
+    </div><!-- /.container-fluid -->
     <!-- Modal -->
-</section>
+    <!-- AddNewUser Modal HTML -->
+    <div id="AddUserModal" class="modal fade">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <form>
+                    <div class="modal-header">
+                        <h4 class="modal-title">Edit Role</h4>
+                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="form-group">
+                            <label>Username</label>
+                            <p id="labelProjectName" type="email" class="form-control" required></p>
 
+                        </div>
+                        <div class="form-group">
+                            <label>Select Role</label>
+                            @Html.DropDownList("idUser", Enumerable.Empty<SelectListItem>(), "Select User", new { @id = "UsersDropdown", @class = "form-control select2" })
+
+                        </div>
+                        <div class="form-group">
+                            <label>Select Role</label>
+                            @Html.DropDownList("idRole", Enumerable.Empty<SelectListItem>(), "Select Role", new { @id = "RolesDropdown", @class = "form-control select2" })
+
+                        </div>
+
+                    </div>
+                    <div class="modal-footer">
+                        <input type="button" class="btn btn-default" data-dismiss="modal" value="Cancel">
+                        <input id="AddUser" class="btn btn-success" value="Save">
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</section>
+<script src='~/Scripts/jquery.validate.js'></script>
 <script src="~/Scripts/jquery.unobtrusive-ajax.js"></script>
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+
+<script src="~/Content/dist/js/bootstrap-notify.js"></script>
 <script>
+
+    //Ajax post to Create new Project 
+    function AjaxPost(formData) {
+        //if ($('#createProject').valid()) {
+            // Console.log("True");
+
+            var ajaxConfig = {
+
+                type: "post",
+                url: "/Admin/CreateProject",
+                data: new FormData(formData),
+                success: function (result) {
+                    var name = $("#project-name").val();
+
+                    $.notify({
+                        title: '<strong>Success!</strong><br />',
+                        message: 'Project ' + name + ' created successfully.'
+                    }, {
+                            type: 'success'
+                        });
+                    window.location.reload();
+                },
+
+                fail: function (result) {
+                    $.notify({
+                        title: '<strong>Error!</strong><br />',
+                        message: 'Whoops! That didn\'t go so well did it ?.'
+                    }, {
+                            type: 'danger'
+                        });
+                }
+            }
+        
+            if ($(formData).attr('enctype') == "multipart/form-data") {
+                ajaxConfig['contentType'] = false;
+                ajaxConfig['processData'] = false;
+            }
+
+            $.ajax(ajaxConfig);
+        
+      
+        return false;
+    };
+
+</script>
+<script>
+    var idProject;
+
     $(document).ready(function () {
 
         getProjects();
 
+        $('[data-toggle="tooltip"]').tooltip();
+        $('#AddUserModal').addClass('show');
+
+        //Ajax get all roles
+        $.ajax({
+            type: "get",
+            url: "http://localhost:59443/api/GetRoles",
+            contentType: "application/json;charset=utf-8",
+            dataType: "json",
+            data: {},
+            success: function (result) {
+                $.each(result, function (i) {
+
+                    var row = $('#RolesDropdown').append($('<option></option>').val(result[i].Id).html(result[i].Name));
+
+
+
+                });
+            },
+            failure: function () {
+                alert("Error");
+            }
+        });
+
+        //Ajax get all users
+        $.ajax({
+            type: "get",
+            url: "http://localhost:59443/api/GetUsers",
+            contentType: "application/json;charset=utf-8",
+            dataType: "json",
+            data: {},
+            success: function (result) {
+                $.each(result, function (i) {
+
+                    var row = $('#UsersDropdown').append($('<option></option>').val(result[i].Id).html(result[i].Email));
+                    
+                });
+            },
+            failure: function () {
+                alert("Error");
+            }
+        });
+
+        //Disabled label
+        $('select option:contains("Select Role")').prop('disabled', true);
+      
 
     });
+    
+    //When click on the button to add new user
+    $(document).on("click", ".edit", function () {
 
-    //function createProject(projectName, projectDescription, logo_url, file) {
-
-    //    $.ajax({
-    //        type: "POST",
-    //        url: 'http://localhost:59443/api/CreateProject',
-    //        dataType: "json",
-    //        data: { Name: projectName, Description: projectDescription, Logo_url: logo_url, Image: file }
-    //    })
-    //        .done(function (dados) {
-
-    //            $('#created-text').text("Project with the id: " + dados.id + "And Name: " + dados.name);
-    //            $("#created-alert").addClass("d-block");
-
-    //            setTimeout(function () {
-
-    //                location.reload();
-
-    //            }, 4000);
-    //        });
-    //}
-    function OnSuccess(value, status) {
-        console.log(status);
-
-        var name = $("#project-name").val();
-        //$('#created-text').text("Project" +" " + name);
-        //        $("#created-alert").addClass("d-block");
-
-        $('#dialog p').text("Project" + " " + name);
-        $('#dialog').addClass("d-block");
-
-        $("#dialog").dialog({
-
-            closeText: "",
+        idProject = $(this).parent().closest("tr").find('td:first').text();
+        var projectName = $(this).parent().closest("tr").find('td:nth-child(2)').text();
+        var roleName = $(this).parent().closest("tr").find('td:nth-child(3)').text();
+        $("#labelProjectName").html(projectName);
+        $('#RolesDropdown > option').each(function () {
+            if ($(this).text() == roleName) {
+                $(this).attr('disabled', true);
+            }
 
         });
-        $(".ui-button").addClass("d-none");
-
-                setTimeout(function () {
-                    location.reload();
-
-                }, 3000);
-    }
-
-    function OnFailure(response) {
-        alert("Whoops! That didn't go so well did it?");
-    }
+    });
 
     $("#inputFile").change(function () {
         var value = $("#inputFile").val();
@@ -221,7 +313,7 @@
         console.log(file);
     });
 
-
+    //Ajax get projects
     function getProjects() {
         $.ajax({
             type: "GET",
@@ -236,80 +328,119 @@
                     setDataTableValues(project.Id, project.Name, project.Description);
                 });
 
-            }).always(function () {
+            }).always(function (Projects) {
                 //Init DataTable
+                //  $("#projects-table").DataTable();
                 $("#projects-table").DataTable();
             });
 
     }
+
+    //Set data to table - new row
     function setDataTableValues(Id, Name, Description) {
 
         var edit = '<a href="http://localhost:54669/Admin/ProjectDetails?ProjectId=' + Id +
             '" target="_blank"><i class="fa fa-edit" style="font-size:24px; color:green"></i></a>';
-        var del = '<a data-toggle="modal" class="tem-trigger-btn"'+ 
-            ' data-toggle="modal" href="#addModal"><i class="fa fa-trash-o" id="i-con" style="font-size:24px; color:red"></i></a>';
+        var del = '<a data-toggle="modal" class="tem-trigger-btn"' +
+            ' data-toggle="modal" href="#addModal"><i class="fa fa-trash-o" id="i-con" style="font-size:24px; color:red" title="Delete"></i></a>';
+        var adduser = '<a href="#AddUserModal" class="edit" data-toggle="modal"><i class="material-icons fa fa-plus-square-o" style="font-size:24px; color:green" data-toggle="tooltip" title="Add User"></i></a>';
 
         var row = '<tr>' +
             '<td>' + Id + '</td>' +
             '<td>' + Name + '</td>' +
             '<td>' + Description + '</td>' +
-            '<td>' + edit + '</td>' +
-            '<td>' + del + '</td>' +
+            //'<td>' + edit + '</td>' +
+            '<td>' + edit + " "+ del+" " + adduser +'</td>' +
             '</tr>';
 
         $('#projects-table > tbody').append(row);
     }
-
-
-
+    
     //On click on trash icon
     //Delete - ********ver query para projectos com associação***********
-    $(document).on("click", ".tem-trigger-btn", function () {   
+    $(document).on("click", ".tem-trigger-btn", function () {
         var projectId = $(this).parent().closest("tr").find('td:first').text();
         var projectName = $(this).parent().closest("tr").find('td:eq(1)').text();
         $("#label-delete").html(projectName);
-        $('#addModal').addClass('show');   
+        $('#addModal').addClass('show');
 
-        //On click on modal button Delete 
-        $(document).on("click", "#idDelete", function () {          
+        //On click on modal button Delete
+        $(document).on("click", "#idDelete", function () {
             $('#addModal').modal('hide');
             deleteProject(projectId, projectName);
         });
 
     });
 
-    
-    function deleteProject(projectId, projectName)
-    {
+    //Ajax delete project
+    function deleteProject(projectId, projectName) {
         $.ajax({
             type: "DELETE",
+            dataType: "json",
+
             url: 'http://localhost:59443/api/DeleteProject/' + projectId,
 
-            success: function (result) {
-
-                $('#dialog p').text("Project" + " " + projectName);
-                $('#dialog').addClass("d-block");     
-
-                $("#dialog").dialog({
-                    position: { my: "left top", at: "left bottom", of: button },
-                    closeText: "",
-                
+        }).done(function (result) {
+            
+            $.notify({
+                title: '<strong>Success!</strong><br />',
+                message: 'Project ' + projectName + ' deleted successfully.'
+            }, {
+                    type: 'success'
                 });
-                $(".ui-button").addClass("d-none");
-                setTimeout(function () {
-                    location.reload();
+            window.location.reload();
 
-                }, 3000);
-            }
+        }).fail(function (result) {
+            $.notify({
+                title: '<strong>Failded!</strong><br />',
+                message: 'Whoops! Unable to delete this project.'
+            }, {
+                    type: 'danger'
+                });
         });
+
 
     }
 
+    //Ajax set data for add new user the project
+    $(document).on("click", "#AddUser", function () {
+        $('#AddUserModal').modal('hide');
+        var data = {
+            RoleId: $('#RolesDropdown').val(),
+            id_project: idProject,
+            UserId: $('#UsersDropdown').val(),
+        }
+        $.ajax({
+            url: 'http://localhost:59443/api/setUserRole',
+            type: 'POST',
+            // dataType: 'json',
+            data: data,
+            success: function (result) {
+               
+                $.notify({
+                    title: '<strong>Success!</strong><br />',
+                    message: 'Project Added successfully.'
+                }, {
+                        type: 'success'
+                    });
+                window.location.reload();
+            },
 
+            fail: function (result) {
+                $.notify({
+                    title: '<strong>Error!</strong><br />',
+                    message: 'Whoops! That didn\'t go so well did it ?.'
+                }, {
+                        type: 'danger'
+                    });
+            }
+        });
+
+    })
 </script>
 
-
 <style>
+
     .card-body .dataTables_wrapper .row .col-md-6 .dataTables_length .form-control {
         display: inline-block;
         width: auto;
@@ -320,12 +451,6 @@
         width: auto;
     }
 
-   
-</style>
-
-
-@*Modal style*@
-<style type="text/css">
     body {
         font-family: 'Varela Round', sans-serif;
     }
@@ -429,3 +554,5 @@
         margin: 100px auto;
     }
 </style>
+
+@*Modal style*@

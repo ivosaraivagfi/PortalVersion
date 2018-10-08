@@ -106,7 +106,14 @@ namespace gfi_test_landing.Controllers
 
                 Session["FirstName"] = user.FirstName;
                 Session["UserId"] = user.Id;
-                //return RedirectToAction("Index");
+                TestBackoffice to = db.TestBackoffice.Where(x => x.id == 1).Select(x => x).FirstOrDefault();
+                Session["changeImage"] = "";
+                if (to.image != null)
+                {
+                    var base64 = Convert.ToBase64String(to.image);
+                    var imageSrc = String.Format("data:image/gif;base64,{0}", base64);
+                    Session["changeImage"] = imageSrc;
+                }
             }
 
             if (!ModelState.IsValid)

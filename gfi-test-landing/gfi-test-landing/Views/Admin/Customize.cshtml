@@ -1,0 +1,261 @@
+﻿@model gfi_test_landing.TestBackoffice
+
+
+
+<section class="content-header">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-sm-6 mx-auto offset-3">
+                <h1>Customize Backoffice</h1>
+            </div>
+            <div class="col-sm-6">
+                <ol class="breadcrumb float-sm-right">
+                    <li class="breadcrumb-item"><a href="/Home/MyProjects">Home</a></li>
+                    <li class="breadcrumb-item active">Customize</li>
+                </ol>
+            </div>
+        </div>
+    </div><!-- /.container-fluid -->
+</section>
+<section class="content">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="card card-primary col-12">
+                <div class="card-header">
+                    <h3 class="card-title">Customize</h3>
+                    <div class="card-tools">
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <!-- Control Sidebar -->
+                        <div class="customize col-12">
+                            <!-- Control sidebar content goes here -->
+                        </div>
+                        <!-- /.control-sidebar -->
+                        <div class="offset-3 col-6 ">
+                            @{
+                                var imageSrc = "";
+                                if (@Model.image != null)
+                                {
+                                    var base64 = Convert.ToBase64String(Model.image);
+                                    imageSrc = String.Format("data:image/gif;base64,{0}", base64);
+                                }
+                            }
+                            @if (imageSrc != "")
+                            {
+                                <img style="margin-top:5%; padding:10%;" class="card-img-top rounded mx-auto d-block" src="@imageSrc">
+                            }
+                            else
+                            {
+                                <img style="margin-top:5%; padding:10%;" class="card-img-top rounded mx-auto d-block" src="~/images/avatar/developer.png">
+                            }
+                        </div>
+                        <div class="col-6">
+                            <div class="form-group">
+                                <label for="exampleInputFile">File input</label>
+                                <div class="input-group">
+                                    <div class="custom-file">
+                                        @*<input type="file" class="custom-file-input" id="inputFile">*@
+                                        @using (Html.BeginForm("Customize", "Admin", FormMethod.Post, new { enctype = "multipart/form-data" }))
+                                        {
+                                            @Html.AntiForgeryToken()
+                                            @Html.TextBoxFor(m => m.imageFile, new { @type = "file", @class = "form-control", id = "inputFile" })
+                                           // <label class="custom-file-label" id="label-inputFile" for="inputFile">Choose file</label>
+                                            
+
+                                            <div class="col-12 mt-2">
+                                                <div class="form-actions form-group">
+                                                    <input type="submit" class="btn btn-success" value="Create" />
+                                                </div>
+                                            </div>
+                                        }
+
+
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- /.row -->
+    </div><!-- /.container-fluid -->
+    <!-- Modal -->
+</section>
+
+
+
+<script>
+
+
+
+    var $sidebar = $('.customize')
+    var $container = $('<div />', {
+        class: 'p-3'
+    })
+
+    $sidebar.append($container)
+
+    var navbar_dark_skins = [
+        'bg-primary',
+        'bg-info',
+        'bg-success',
+        'bg-danger'
+    ]
+
+    var navbar_light_skins = [
+        'bg-warning',
+        'bg-white',
+        'bg-gray-light'
+    ]
+
+    $container.append(
+
+        '<h6>Navbar Variants</h6>'
+    )
+
+    var $navbar_variants = $('<div />', {
+        'class': 'd-flex'
+    })
+    var navbar_all_colors = navbar_dark_skins.concat(navbar_light_skins)
+    var $navbar_variants_colors = createSkinBlock(navbar_all_colors, function (e) {
+        var color = $(this).data('color')
+        console.log('Adding ' + color)
+        var $main_header = $('.main-header')
+        $main_header.removeClass('navbar-dark').removeClass('navbar-light')
+        navbar_all_colors.map(function (color) {
+            $main_header.removeClass(color)
+        })
+
+        if (navbar_dark_skins.indexOf(color) > -1) {
+            $main_header.addClass('navbar-dark')
+            console.log('AND navbar-dark')
+        } else {
+            console.log('AND navbar-light')
+            $main_header.addClass('navbar-light')
+        }
+
+        $main_header.addClass(color)
+    })
+
+    $navbar_variants.append($navbar_variants_colors)
+
+    $container.append($navbar_variants)
+
+
+    var sidebar_colors = [
+        'bg-primary',
+        'bg-warning',
+        'bg-info',
+        'bg-danger',
+        'bg-success',
+        'bg-secondary',
+        'bg-light',
+        'bg-dark'
+    ]
+
+    var sidebar_skins = [
+        'sidebar-dark-primary',
+        'sidebar-dark-warning',
+        'sidebar-dark-info',
+        'sidebar-dark-danger',
+        'sidebar-dark-success',
+        'sidebar-light-primary',
+        'sidebar-light-warning',
+        'sidebar-light-info',
+        'sidebar-light-danger',
+        'sidebar-light-success'
+    ]
+
+    $container.append('<h6>Dark Sidebar Variants</h6>')
+    var $sidebar_variants = $('<div />', {
+        'class': 'd-flex'
+    })
+    $container.append($sidebar_variants)
+    var $clear_btn = $('<a />', {
+        href: 'javascript:void(0)'
+    }).text('clear').on('click', function () {
+        var $logo = $('.main-sidebar')
+        sidebar_colors.map(function (color) {
+            $logo.removeClass(color)
+        })
+    })
+    $container.append(createSkinBlock(sidebar_colors, function () {
+        var color = $(this).data('color')
+        var sidebar_class = 'bg-' + color.replace('bg-', '')
+        var $sidebar = $('.main-sidebar')
+        sidebar_colors.map(function (color) {
+
+            $sidebar.removeClass(color)
+        })
+
+        $sidebar.addClass(sidebar_class)
+    }).append($clear_btn))
+
+
+    var logo_skins = navbar_all_colors
+    $container.append('<h6>Brand Logo Variants</h6>')
+    var $logo_variants = $('<div />', {
+        'class': 'd-flex'
+    })
+    $container.append($logo_variants)
+    var $clear_btn = $('<a />', {
+        href: 'javascript:void(0)'
+    }).text('clear').on('click', function () {
+        var $logo = $('.brand-link')
+        logo_skins.map(function (skin) {
+            $logo.removeClass(skin)
+        })
+    })
+    $container.append(createSkinBlock(logo_skins, function () {
+        var color = $(this).data('color')
+        var $logo = $('.brand-link')
+        logo_skins.map(function (skin) {
+            $logo.removeClass(skin)
+        })
+        $logo.addClass(color)
+    }).append($clear_btn))
+
+    function createSkinBlock(colors, callback) {
+        var $block = $('<div />', {
+            'class': 'd-flex flex-wrap mb-3'
+        })
+
+        colors.map(function (color) {
+            var $color = $('<div />', {
+                'class': (typeof color === 'object' ? color.join(' ') : color) + ' elevation-2'
+            })
+
+            $block.append($color)
+
+            $color.data('color', color)
+
+            $color.css({
+                width: '40px',
+                height: '20px',
+                borderRadius: '25px',
+                marginRight: 10,
+                marginBottom: 10,
+                opacity: 0.8,
+                cursor: 'pointer'
+            })
+
+            $color.hover(function () {
+                $(this).css({ opacity: 1 }).removeClass('elevation-2').addClass('elevation-4')
+            }, function () {
+                $(this).css({ opacity: 0.8 }).removeClass('elevation-4').addClass('elevation-2')
+            })
+
+            if (callback) {
+                $color.on('click', callback)
+            }
+        })
+
+        return $block
+    }
+
+</script>
